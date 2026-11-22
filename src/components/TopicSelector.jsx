@@ -1,10 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Search, 
   ArrowRight, 
+  ArrowLeft,
   Sparkles, 
   ChevronDown, 
   ChevronUp, 
+  ChevronLeft,
+  ChevronRight,
   Layers, 
   HelpCircle, 
   Clock, 
@@ -57,17 +60,19 @@ const PROBLEM_ICONS = {
   '1.21': { icon: Flame, color: 'text-red-600 bg-red-100/70 border-red-200', tag: 'Nhiều môn thi 1 ngày' },
 };
 
+const ITEMS_PER_PAGE = 6; // Phân trang đúng 6 vấn đề mỗi trang theo yêu cầu
+
 export default function TopicSelector({ 
   problems, 
   onSelectProblem, 
   studentInfo, 
   onOpenStudentModal 
 }) {
-  // Trạng thái đã bấm "Gỡ rối cùng mình nhé" hay chưa
   const [isStarted, setIsStarted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
-  const [expandedId, setExpandedId] = useState(null); // ID trường hợp đang xem chi tiết mô tả
+  const [expandedId, setExpandedId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Phân loại danh mục
   const categorizedProblems = useMemo(() => {
@@ -109,7 +114,19 @@ export default function TopicSelector({
     });
   }, [categorizedProblems, activeCategory, searchQuery]);
 
-  // Xử lý khi bấm nút "Gỡ rối cùng mình nhé"
+  // Reset về trang 1 khi tìm kiếm hoặc đổi danh mục
+  useEffect(() => {
+    setCurrentPage(1);
+    setExpandedId(null);
+  }, [searchQuery, activeCategory]);
+
+  // Tính toán phân trang (6 vấn đề mỗi trang)
+  const totalPages = Math.ceil(filteredProblems.length / ITEMS_PER_PAGE) || 1;
+  const paginatedProblems = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredProblems.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredProblems, currentPage]);
+
   const handleStart = () => {
     soundFx.playChime();
     setIsStarted(true);
@@ -173,7 +190,7 @@ export default function TopicSelector({
             </button>
           </div>
 
-          {/* 3 Cam kết */}
+          {/* 3 Điểm tựa */}
           <div className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left max-w-3xl mx-auto pt-8 border-t border-slate-200/60">
             <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
               <div className="flex items-center gap-2 text-blue-600 font-bold text-sm mb-1">
@@ -206,18 +223,24 @@ export default function TopicSelector({
         </div>
       ) : (
         /* ============================================================== */
-        /* 2. DANH SÁCH 21 TRƯỜNG HỢP (HIỂN THỊ FULL TIÊU ĐỀ + XEM MÔ TẢ) */
+        /* 2. DANH SÁCH TÌNH HUỐNG (PHÂN TRANG 6 VẤN ĐỀ / TRANG)          */
         /* ============================================================== */
         <div className="animate-fade-in-up">
           
-          {/* Header danh sách */}
+          {/* Header danh sách + NÚT QUAY LẠI TRANG GIỚI THIỆU THIẾT KẾ ĐẸP MẮT */}
           <div className="text-center max-w-3xl mx-auto mb-8 px-4">
-            <div className="flex items-center justify-center gap-2 mb-3">
+            
+            {/* Nút quay lại được thiết kế lại đẹp chuẩn UI/UX */}
+            <div className="flex items-center justify-center mb-5">
               <button
-                onClick={() => setIsStarted(false)}
-                className="text-xs font-semibold text-slate-500 hover:text-blue-600 underline cursor-pointer"
+                onClick={() => {
+                  soundFx.playBack();
+                  setIsStarted(false);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-600 border border-slate-200 hover:border-blue-300 shadow-2xs hover:shadow-sm text-xs sm:text-sm font-semibold transition-all duration-150 cursor-pointer group"
               >
-                ← Quay lại trang giới thiệu
+                <ArrowLeft className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:-translate-x-1 transition-transform" />
+                <span>Quay lại trang giới thiệu</span>
               </button>
             </div>
 
@@ -266,9 +289,9 @@ export default function TopicSelector({
             </div>
           </div>
 
-          {/* Grid danh sách 21 trường hợp - FULL TIÊU ĐỀ + XEM CHI TIẾT MÔ TẢ */}
+          {/* Grid danh sách: Đúng 6 vấn đề mỗi trang (FULL TIÊU ĐỀ + XEM MÔ TẢ) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 px-4">
-            {filteredProblems.map((prob) => {
+            {paginatedProblems.map((prob) => {
               const Icon = prob.IconComponent;
               const isExpanded = expandedId === prob.Id;
 
@@ -280,7 +303,7 @@ export default function TopicSelector({
                   }`}
                 >
                   <div>
-                    {/* Header Card: Icon trực quan + Nhãn phân loại (Không còn chữ "Bộ câu") */}
+                    {/* Header Card: Icon trực quan + Nhãn phân loại */}
                     <div className="flex items-center justify-between gap-3 mb-4">
                       <div className="flex items-center gap-2.5">
                         <div className={`w-11 h-11 rounded-2xl flex items-center justify-center border ${prob.colorClass}`}>
@@ -301,7 +324,7 @@ export default function TopicSelector({
                       {prob.Title}
                     </h3>
 
-                    {/* Nút bấm để xem chi tiết mô tả */}
+                    {/* Bấm vào để xem chi tiết mô tả */}
                     <div className="mt-3">
                       <button
                         onClick={(e) => toggleExpand(e, prob.Id)}
@@ -345,12 +368,67 @@ export default function TopicSelector({
             })}
           </div>
 
+          {/* BỘ ĐIỀU KHIỂN PHÂN TRANG (6 VẤN ĐỀ MỖI TRANG) */}
+          {totalPages > 1 && (
+            <div className="mt-10 mx-4 px-4 sm:px-6 py-4 bg-white rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="text-xs sm:text-sm text-slate-500 font-medium">
+                Đang hiển thị <strong>{(currentPage - 1) * ITEMS_PER_PAGE + 1} - {Math.min(currentPage * ITEMS_PER_PAGE, filteredProblems.length)}</strong> trên tổng số <strong>{filteredProblems.length}</strong> tình huống
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => {
+                    soundFx.playBack();
+                    setCurrentPage(p => Math.max(1, p - 1));
+                    window.scrollTo({ top: 380, behavior: 'smooth' });
+                  }}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+                  title="Trang trước"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+                  <button
+                    key={num}
+                    onClick={() => {
+                      soundFx.playChime();
+                      setCurrentPage(num);
+                      window.scrollTo({ top: 380, behavior: 'smooth' });
+                    }}
+                    className={`w-9 h-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      currentPage === num
+                        ? 'bg-blue-600 text-white shadow-xs scale-105'
+                        : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200'
+                    }`}
+                  >
+                    {num}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => {
+                    soundFx.playChime();
+                    setCurrentPage(p => Math.min(totalPages, p + 1));
+                    window.scrollTo({ top: 380, behavior: 'smooth' });
+                  }}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+                  title="Trang sau"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
           {filteredProblems.length === 0 && (
             <div className="text-center py-12 text-slate-500">
               <p className="text-base font-medium">Không tìm thấy tình huống nào với từ khóa này.</p>
               <button 
                 onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}
-                className="mt-3 px-4 py-2 rounded-xl bg-slate-100 text-sm text-blue-600 hover:bg-slate-200 font-semibold"
+                className="mt-3 px-4 py-2 rounded-xl bg-slate-100 text-sm text-blue-600 hover:bg-slate-200 font-semibold cursor-pointer"
               >
                 Xem lại toàn bộ 21 tình huống
               </button>

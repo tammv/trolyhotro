@@ -48,6 +48,13 @@ export default function App() {
     localStorage.setItem(LOCAL_STORAGE_STUDENT, JSON.stringify(info));
   };
 
+  // Kết thúc phiên học sinh hiện tại (Đăng xuất để học sinh mới nhập)
+  const handleEndSession = () => {
+    localStorage.removeItem(LOCAL_STORAGE_STUDENT);
+    setStudentInfo(null);
+    setSelectedProblem(null);
+  };
+
   // Chọn vấn đề để gỡ rối
   const handleSelectProblem = (prob) => {
     soundFx.playChime();
@@ -118,6 +125,7 @@ export default function App() {
         isOpen={isStudentModalOpen}
         onClose={() => setIsStudentModalOpen(false)}
         onSave={handleSaveStudentInfo}
+        onEndSession={handleEndSession}
         currentInfo={studentInfo}
       />
 

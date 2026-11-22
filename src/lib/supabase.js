@@ -16,6 +16,7 @@ export const supabase = isSupabaseConfigured
 // Khóa lưu trữ cục bộ khi chạy offline/chưa cấu hình Supabase
 const LOCAL_STORAGE_VISITS = 'studyzen_visits_v2';
 const LOCAL_STORAGE_SESSIONS = 'studyzen_student_sessions';
+const LOCAL_STORAGE_FEEDBACKS = 'studyzen_student_feedbacks';
 
 /**
  * Ghi nhận một lượt truy cập trang web
@@ -109,4 +110,36 @@ export async function getAllSessions() {
 
   // Fallback LocalStorage
   return JSON.parse(localStorage.getItem(LOCAL_STORAGE_SESSIONS) || '[]');
+}
+
+/**
+ * Lưu đánh giá độ hài lòng & góp ý của học sinh
+ */
+export async function saveStudentFeedback(feedbackData) {
+  const localList = JSON.parse(localStorage.getItem(LOCAL_STORAGE_FEEDBACKS) || '[]');
+  const newEntry = {
+    id: `fb-${Date.now()}`,
+    created_at: new Date().toISOString(),
+    ...feedbackData
+  };
+  localList.unshift(newEntry);
+  localStorage.setItem(LOCAL_STORAGE_FEEDBACKS, JSON.stringify(localList.slice(0, 200)));
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      await supabase.from('student_feedbacks').insert([{
+        student_name: feedbackData.student_name,
+        grade_class: feedbackData.grade_class,
+        school_name: feedbackData.school_name,
+        problem_id: feedbackData.problem_id,
+        problem_title: feedbackData.problem_title,
+        rating: feedbackData.rating,
+        comment: feedbackData.comment
+      }]);
+    } catch (err) {
+      console.warn('Lỗi lưu feedback Supabase:', err);
+    }
+  }
+
+  return newEntry;
 }

@@ -10,11 +10,14 @@ import {
   Check, 
   ChevronRight,
   ShieldCheck,
-  Heart
+  Heart,
+  Star,
+  MessageSquare,
+  Send
 } from 'lucide-react';
 import { soundFx } from '../lib/sound';
 import { getRandomQuote } from '../lib/motivationalQuotes';
-import { saveStudentSession } from '../lib/supabase';
+import { saveStudentSession, saveStudentFeedback } from '../lib/supabase';
 
 export default function DecisionTree({ 
   problem, 
@@ -27,6 +30,12 @@ export default function DecisionTree({
   const [selectedSubIndex, setSelectedSubIndex] = useState(null);
   const [encouragement, setEncouragement] = useState('');
   const [copied, setCopied] = useState(false);
+
+  // Trạng thái đánh giá & góp ý
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
+  const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false);
+  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
 
   // Cuộn lên đầu trang khi đổi bước
   useEffect(() => {
@@ -99,6 +108,34 @@ export default function DecisionTree({
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  // Gửi đánh giá độ hài lòng & góp ý
+  const handleSubmitFeedback = async (e) => {
+    e.preventDefault();
+    setIsSubmittingFeedback(true);
+    soundFx.playSuccess();
+    try {
+      await saveStudentFeedback({
+        student_name: studentInfo?.name || 'Ẩn danh',
+        grade_class: studentInfo?.gradeClass || 'Chưa rõ',
+        school_name: studentInfo?.school || 'Chưa rõ',
+        problem_id: problem.Code,
+        problem_title: problem.Title,
+        rating,
+        comment: comment.trim()
+      });
+      setIsFeedbackSubmitted(true);
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { y: 0.8 }
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmittingFeedback(false);
+    }
   };
 
   return (
@@ -339,6 +376,92 @@ export default function DecisionTree({
               <div className="text-xs sm:text-sm text-blue-900 leading-relaxed">
                 <strong>Nhắn nhủ từ thầy cô:</strong> Bạn không phải chịu đựng áp lực một mình. Nếu sau khi thử các bước trên mà bạn vẫn thấy căng thẳng hoặc bối rối, hãy tìm đến thầy cô bộ môn, cán bộ tư vấn tâm lý học đường hoặc người thân để được hỗ trợ trực tiếp nhé.
               </div>
+            </div>
+
+            {/* KHẢO SÁT ĐỘ HÀI LÒNG & GÓP Ý CỦA HỌC SINH */}
+            <div className="mt-8 p-6 rounded-3xl bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/40 border border-blue-200/80 shadow-2xs">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-2 rounded-xl bg-blue-600 text-white">
+                  <MessageSquare className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-sm sm:text-base">
+                    Đánh Giá Độ Hài Lòng & Góp Ý Của Bạn
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Hướng dẫn này có giúp bạn cảm thấy nhẹ nhõm và dễ xử lý hơn không?
+                  </p>
+                </div>
+              </div>
+
+              {!isFeedbackSubmitted ? (
+                <form onSubmit={handleSubmitFeedback} className="space-y-4 mt-4">
+                  {/* Rating Stars / Emojis */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                      Mức độ hài lòng của bạn:
+                    </label>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {[
+                        { score: 1, label: 'Chưa hữu ích', emoji: '😞' },
+                        { score: 2, label: 'Tàm tạm', emoji: '😐' },
+                        { score: 3, label: 'Có ích chút', emoji: '🙂' },
+                        { score: 4, label: 'Rất hữu ích', emoji: '😊' },
+                        { score: 5, label: 'Tuyệt vời, nhẹ lòng!', emoji: '🤩' },
+                      ].map((item) => (
+                        <button
+                          key={item.score}
+                          type="button"
+                          onClick={() => {
+                            soundFx.playChime();
+                            setRating(item.score);
+                          }}
+                          className={`px-3 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                            rating === item.score
+                              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-105'
+                              : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+                          }`}
+                        >
+                          <span className="text-base">{item.emoji}</span>
+                          <span>{item.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Comment Textarea */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                      Góp ý hoặc lời nhắn gửi thêm (không bắt buộc):
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      placeholder="Chia sẻ cảm xúc của bạn hoặc góp ý để công cụ hỗ trợ bạn tốt hơn..."
+                      className="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-xs sm:text-sm text-slate-800 transition-all"
+                    />
+                  </div>
+
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={isSubmittingFeedback}
+                      className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow-md shadow-blue-500/20 hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      <Send className="w-4 h-4" />
+                      <span>{isSubmittingFeedback ? 'Đang gửi...' : 'Gửi đánh giá & Góp ý'}</span>
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="mt-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-emerald-900 flex items-center gap-3 animate-in fade-in duration-300">
+                  <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
+                  <div className="text-xs sm:text-sm">
+                    <strong>Cảm ơn bạn đã gửi đánh giá!</strong> Chúc bạn luôn bình tĩnh, tự tin và vượt qua mọi thử thách trong học tập nhé ✨
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Bottom Actions */}
