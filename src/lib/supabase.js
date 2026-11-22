@@ -14,7 +14,7 @@ export const supabase = isSupabaseConfigured
   : null;
 
 // Khóa lưu trữ cục bộ khi chạy offline/chưa cấu hình Supabase
-const LOCAL_STORAGE_VISITS = 'studyzen_total_visits';
+const LOCAL_STORAGE_VISITS = 'studyzen_visits_v2';
 const LOCAL_STORAGE_SESSIONS = 'studyzen_student_sessions';
 
 /**
@@ -22,7 +22,7 @@ const LOCAL_STORAGE_SESSIONS = 'studyzen_student_sessions';
  */
 export async function recordVisit() {
   // Ghi nhận cục bộ
-  const currentCount = parseInt(localStorage.getItem(LOCAL_STORAGE_VISITS) || '120', 10);
+  const currentCount = parseInt(localStorage.getItem(LOCAL_STORAGE_VISITS) || '0', 10);
   const newCount = currentCount + 1;
   localStorage.setItem(LOCAL_STORAGE_VISITS, newCount.toString());
 
@@ -48,13 +48,13 @@ export async function getVisitCount() {
         .from('site_visits')
         .select('*', { count: 'exact', head: true });
       if (!error && count !== null) {
-        return Math.max(count, 120); // base count
+        return count;
       }
     } catch (err) {
       console.warn('Lỗi lấy lượt truy cập Supabase:', err);
     }
   }
-  return parseInt(localStorage.getItem(LOCAL_STORAGE_VISITS) || '120', 10);
+  return parseInt(localStorage.getItem(LOCAL_STORAGE_VISITS) || '0', 10);
 }
 
 /**

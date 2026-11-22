@@ -19,7 +19,7 @@ export default function App() {
   const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-  const [visitCount, setVisitCount] = useState(120);
+  const [visitCount, setVisitCount] = useState(0);
 
   // Khởi tạo app
   useEffect(() => {

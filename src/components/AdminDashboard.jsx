@@ -59,7 +59,7 @@ export default function AdminDashboard({ isOpen, onClose }) {
   const topProblems = useMemo(() => {
     const counts = {};
     sessions.forEach(s => {
-      const title = s.problem_title || `Bộ câu ${s.problem_id}` || 'Chưa xác định';
+      const title = s.problem_title || (s.problem_id ? `Tình huống ${s.problem_id}` : 'Chưa xác định');
       counts[title] = (counts[title] || 0) + 1;
     });
     return Object.entries(counts)

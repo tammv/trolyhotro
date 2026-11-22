@@ -177,8 +177,9 @@ export default function DecisionTree({
         <div className="space-y-6 animate-in fade-in duration-200">
           {/* Header Vấn Đề */}
           <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-xs">
-            <div className="inline-block px-3 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200 mb-3">
-              Bộ câu {problem.Code}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200 mb-3">
+              <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+              <span>Tình huống đang gỡ rối</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
               {problem.Title}
