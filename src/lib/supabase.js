@@ -143,3 +143,26 @@ export async function saveStudentFeedback(feedbackData) {
 
   return newEntry;
 }
+
+/**
+ * Lấy tất cả đánh giá & góp ý cho trang Thống kê Dashboard
+ */
+export async function getAllFeedbacks() {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('student_feedbacks')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(300);
+      if (!error && data) {
+        return data;
+      }
+    } catch (err) {
+      console.warn('Lỗi tải dữ liệu feedback từ Supabase:', err);
+    }
+  }
+
+  // Fallback LocalStorage
+  return JSON.parse(localStorage.getItem(LOCAL_STORAGE_FEEDBACKS) || '[]');
+}
