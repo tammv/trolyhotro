@@ -15,6 +15,12 @@
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  .dark body {
+    background-color: #131f24;
+    color: #e6eef2;
   }
 }
 
@@ -26,9 +32,15 @@
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
+.dark ::-webkit-scrollbar-track {
+  background: #131f24;
+}
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #37464f;
 }
 
 /* Duolingo-style 3D Tactile Buttons & Cards */
@@ -71,9 +83,19 @@
   box-shadow: 0 3px 0 #cbd5e1;
   color: #334155;
 }
+.dark .btn-3d-white {
+  background: #1c2b33;
+  border-color: #37464f;
+  box-shadow: 0 3px 0 #243640;
+  color: #e6eef2;
+}
 .btn-3d-white:hover {
   background: #f8fafc;
   border-color: #cbd5e1;
+}
+.dark .btn-3d-white:hover {
+  background: #243640;
+  border-color: #4b5e6b;
 }
 
 /* Card 3D tactile */
@@ -82,7 +104,13 @@
   border: 2px solid #e2e8f0;
   box-shadow: 0 4px 0 #e2e8f0;
   border-radius: 22px;
-  transition: transform 0.25s var(--spring), box-shadow 0.25s var(--spring), border-color 0.2s;
+  transition: transform 0.25s var(--spring), box-shadow 0.25s var(--spring), border-color 0.2s, background-color 0.2s;
+}
+.dark .card-3d {
+  background: #1c2b33;
+  border-color: #37464f;
+  box-shadow: 0 4px 0 #243640;
+  color: #e6eef2;
 }
 @media (hover: hover) {
   .card-3d:hover {
@@ -90,10 +118,17 @@
     box-shadow: 0 7px 0 #cbd5e1;
     border-color: #93c5fd;
   }
+  .dark .card-3d:hover {
+    box-shadow: 0 7px 0 #243640;
+    border-color: #1cb0f6;
+  }
 }
 .card-3d:active {
   transform: translateY(2px);
   box-shadow: 0 2px 0 #cbd5e1;
+}
+.dark .card-3d:active {
+  box-shadow: 0 2px 0 #243640;
 }
 
 /* 3D Progress Bar (Candy bar) */
@@ -104,6 +139,10 @@
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.08);
   overflow: hidden;
   position: relative;
+}
+.dark .bar-3d-container {
+  background: #243640;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
 }
 .bar-3d-fill {
   height: 100%;

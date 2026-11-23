@@ -9,6 +9,8 @@ import { soundFx } from './lib/sound';
 import { recordVisit, getVisitCount } from './lib/supabase';
 import questionsData from './data/questions_data.json';
 
+const THEME_STORAGE_KEY = 'studyzen_dark_mode';
+
 export default function App() {
   const [problems] = useState(questionsData);
   const [selectedProblem, setSelectedProblem] = useState(null);
@@ -16,6 +18,29 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [visitCount, setVisitCount] = useState(0);
+
+  // Quản lý Chế độ Tối (Dark Mode)
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    if (saved !== null) {
+      return saved === 'true';
+    }
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem(THEME_STORAGE_KEY, isDarkMode.toString());
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    soundFx.playChime();
+    setIsDarkMode(prev => !prev);
+  };
 
   // Khởi tạo lượt truy cập
   useEffect(() => {
@@ -27,7 +52,7 @@ export default function App() {
     soundFx.setMuted(isMuted);
   }, [isMuted]);
 
-  // Chọn vấn đề để gỡ rối - Vào thẳng ngay lập tức, không có bất kỳ popup nào
+  // Chọn vấn đề để gỡ rối
   const handleSelectProblem = (prob) => {
     soundFx.playChime();
     setSelectedProblem(prob);
@@ -40,7 +65,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#131f24] text-slate-800 dark:text-[#e6eef2] flex flex-col font-sans transition-colors duration-250">
       
       {/* Background Ambient Chill Music */}
       <BackgroundMusic isPlaying={isMusicPlaying} />
@@ -52,6 +77,8 @@ export default function App() {
         setIsMuted={setIsMuted}
         isMusicPlaying={isMusicPlaying}
         setIsMusicPlaying={setIsMusicPlaying}
+        isDarkMode={isDarkMode}
+        toggleDarkMode={toggleDarkMode}
         onOpenDashboard={() => setIsAdminDashboardOpen(true)}
         onGoHome={handleBackToTopics}
       />
@@ -72,12 +99,12 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-12 sm:mt-16 border-t-2 border-slate-200 bg-white py-8 text-center text-xs text-slate-500 pb-24 sm:pb-8">
+      <footer className="mt-12 sm:mt-16 border-t-2 border-slate-200 dark:border-[#37464f] bg-white dark:bg-[#1c2b33] py-8 text-center text-xs text-slate-500 dark:text-[#8fa5b1] pb-24 sm:pb-8 transition-colors">
         <div className="max-w-6xl mx-auto px-4 space-y-2">
-          <p className="font-bold text-slate-700">
+          <p className="font-bold text-slate-700 dark:text-[#e6eef2]">
             Trợ Lý Gỡ Rối Học Tập • Hệ thống hỗ trợ tâm lý & giải quyết áp lực học đường
           </p>
-          <p className="text-slate-400 font-medium">
+          <p className="text-slate-400 dark:text-[#8fa5b1] font-medium">
             Dữ liệu tổng hợp từ các chuyên đề thực tế dành cho học sinh. Luôn có giải pháp cho mọi khó khăn!
           </p>
         </div>
@@ -89,6 +116,8 @@ export default function App() {
         setIsMuted={setIsMuted}
         isMusicPlaying={isMusicPlaying}
         setIsMusicPlaying={setIsMusicPlaying}
+        isDarkMode={isDarkMode}
+        toggleDarkMode={toggleDarkMode}
         onOpenDashboard={() => setIsAdminDashboardOpen(true)}
         onGoHome={handleBackToTopics}
       />
