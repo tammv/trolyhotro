@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --spring: cubic-bezier(0.2, 1.5, 0.35, 1);
@@ -18,8 +20,10 @@
     transition: background-color 0.25s ease, color 0.25s ease;
   }
 
+  html.dark,
+  html.dark body,
   .dark body {
-    background-color: #131f24;
+    background-color: #131f24 !important;
     color: #e6eef2;
   }
 }
