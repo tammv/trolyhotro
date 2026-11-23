@@ -1,5 +1,5 @@
 import React from 'react';
-import { Volume2, VolumeX, Music, BarChart3, User, Sparkles } from 'lucide-react';
+import { Volume2, VolumeX, Music, BarChart3, Sparkles } from 'lucide-react';
 
 export default function Header({ 
   visitCount, 
@@ -7,8 +7,6 @@ export default function Header({
   setIsMuted, 
   isMusicPlaying, 
   setIsMusicPlaying,
-  studentInfo,
-  onOpenStudentModal,
   onOpenDashboard,
   onGoHome
 }) {
@@ -82,18 +80,6 @@ export default function Header({
               }`}
             >
               <Music className={`w-4 h-4 ${isMusicPlaying ? 'animate-pulse' : ''}`} />
-            </button>
-
-            {/* Nút thông tin học sinh */}
-            <button
-              onClick={onOpenStudentModal}
-              title={studentInfo ? "Bấm để xem hoặc đổi tên bạn" : "Nhập tên bạn để bắt đầu"}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold border-2 border-slate-200 shadow-[0_3px_0_#e2e8f0] btn-3d cursor-pointer"
-            >
-              <User className="w-3.5 h-3.5 text-blue-500" />
-              <span className="max-w-[120px] truncate">
-                {studentInfo ? studentInfo.name : 'Nhập tên bạn'}
-              </span>
             </button>
 
             {/* Nút Thống Kê (Dashboard) */}

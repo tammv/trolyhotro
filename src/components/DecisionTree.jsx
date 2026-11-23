@@ -21,7 +21,6 @@ import { saveStudentSession, saveStudentFeedback } from '../lib/supabase';
 
 export default function DecisionTree({ 
   problem, 
-  studentInfo, 
   onBackToTopics 
 }) {
   const [currentStep, setCurrentStep] = useState(1);
@@ -68,9 +67,9 @@ export default function DecisionTree({
     });
 
     saveStudentSession({
-      student_name: studentInfo?.name || 'Ẩn danh',
-      grade_class: studentInfo?.gradeClass || 'Chưa rõ',
-      school_name: studentInfo?.school || 'Chưa rõ',
+      student_name: 'Học sinh',
+      grade_class: 'Chung',
+      school_name: 'Trường học',
       problem_id: problem.Code,
       problem_title: problem.Title,
       selected_branches: {
@@ -107,9 +106,9 @@ export default function DecisionTree({
     soundFx.playSuccess();
     try {
       await saveStudentFeedback({
-        student_name: studentInfo?.name || 'Ẩn danh',
-        grade_class: studentInfo?.gradeClass || 'Chưa rõ',
-        school_name: studentInfo?.school || 'Chưa rõ',
+        student_name: 'Học sinh',
+        grade_class: 'Chung',
+        school_name: 'Trường học',
         problem_id: problem.Code,
         problem_title: problem.Title,
         rating,

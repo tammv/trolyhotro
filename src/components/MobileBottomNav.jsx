@@ -1,18 +1,16 @@
 import React from 'react';
-import { Sparkles, Volume2, VolumeX, Music, User, BarChart3 } from 'lucide-react';
+import { Sparkles, Volume2, VolumeX, Music, BarChart3 } from 'lucide-react';
 
 export default function MobileBottomNav({
   isMuted,
   setIsMuted,
   isMusicPlaying,
   setIsMusicPlaying,
-  studentInfo,
-  onOpenStudentModal,
   onOpenDashboard,
   onGoHome
 }) {
   return (
-    <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t-2 border-slate-200 shadow-xl rounded-t-2xl px-2 py-1.5 flex items-center justify-around select-none">
+    <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t-2 border-slate-200 shadow-xl rounded-t-2xl px-4 py-2 flex items-center justify-around select-none">
       
       {/* 1. Trang chủ / Bắt đầu */}
       <button
@@ -45,20 +43,7 @@ export default function MobileBottomNav({
         <span className="text-[10px] mt-0.5">{isMusicPlaying ? 'Đang bật' : 'Nhạc lofi'}</span>
       </button>
 
-      {/* 4. Tên học sinh */}
-      <button
-        onClick={onOpenStudentModal}
-        className="flex flex-col items-center justify-center p-2 rounded-xl text-slate-700 active:scale-95 transition-transform max-w-[80px]"
-      >
-        <div className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-black">
-          {studentInfo?.name ? studentInfo.name.charAt(0).toUpperCase() : <User className="w-3.5 h-3.5" />}
-        </div>
-        <span className="text-[10px] font-bold mt-0.5 truncate w-full text-center">
-          {studentInfo ? studentInfo.name : 'Tên bạn'}
-        </span>
-      </button>
-
-      {/* 5. Thống kê */}
+      {/* 4. Thống kê */}
       <button
         onClick={onOpenDashboard}
         className="flex flex-col items-center justify-center p-2 rounded-xl text-slate-500 hover:text-slate-900 active:scale-95 transition-transform"

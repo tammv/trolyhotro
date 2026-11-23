@@ -64,9 +64,7 @@ const ITEMS_PER_PAGE = 6;
 
 export default function TopicSelector({ 
   problems, 
-  onSelectProblem, 
-  studentInfo, 
-  onOpenStudentModal 
+  onSelectProblem 
 }) {
   const [isStarted, setIsStarted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -129,9 +127,6 @@ export default function TopicSelector({
   const handleStart = () => {
     soundFx.playChime();
     setIsStarted(true);
-    if (!studentInfo) {
-      onOpenStudentModal();
-    }
   };
 
   const toggleExpand = (e, id) => {
@@ -148,19 +143,6 @@ export default function TopicSelector({
       {/* ============================================================== */}
       {!isStarted ? (
         <div className="max-w-4xl mx-auto text-center px-3 sm:px-4 py-6 sm:py-14 animate-fade-in-up">
-          
-          {studentInfo && (
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-blue-50 text-blue-700 text-xs sm:text-sm font-bold border-2 border-blue-200 shadow-[0_3px_0_#bfdbfe] mb-6">
-              <Sparkles className="w-4 h-4 text-blue-600 animate-spin" style={{ animationDuration: '4s' }} />
-              <span>Chào bạn <strong>{studentInfo.name}</strong> ({studentInfo.gradeClass} - {studentInfo.school})</span>
-              <button 
-                onClick={onOpenStudentModal}
-                className="underline text-blue-600 hover:text-blue-800 ml-1 cursor-pointer"
-              >
-                Đổi
-              </button>
-            </div>
-          )}
 
           {/* Hero Avatar 3D */}
           <div className="w-20 h-20 sm:w-28 sm:h-28 mx-auto rounded-3xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-purple-500 flex items-center justify-center text-white border-4 border-white shadow-[0_8px_0_#1e40af] mb-6 sm:mb-8 animate-float">

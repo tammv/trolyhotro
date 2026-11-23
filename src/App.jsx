@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import TopicSelector from './components/TopicSelector';
 import DecisionTree from './components/DecisionTree';
-import StudentModal from './components/StudentModal';
 import AdminDashboard from './components/AdminDashboard';
 import BackgroundMusic from './components/BackgroundMusic';
 import MobileBottomNav from './components/MobileBottomNav';
@@ -10,32 +9,17 @@ import { soundFx } from './lib/sound';
 import { recordVisit, getVisitCount } from './lib/supabase';
 import questionsData from './data/questions_data.json';
 
-const LOCAL_STORAGE_STUDENT = 'studyzen_student_profile';
-
 export default function App() {
   const [problems] = useState(questionsData);
   const [selectedProblem, setSelectedProblem] = useState(null);
-  const [studentInfo, setStudentInfo] = useState(null);
-  const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
   const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [visitCount, setVisitCount] = useState(0);
 
-  // Khởi tạo app
+  // Khởi tạo lượt truy cập
   useEffect(() => {
-    // 1. Cập nhật lượt truy cập
     recordVisit().then((count) => setVisitCount(count));
-
-    // 2. Tải thông tin học sinh đã lưu (nếu có)
-    const saved = localStorage.getItem(LOCAL_STORAGE_STUDENT);
-    if (saved) {
-      try {
-        setStudentInfo(JSON.parse(saved));
-      } catch {
-        // Ignored
-      }
-    }
   }, []);
 
   // Đồng bộ trạng thái âm thanh
@@ -43,27 +27,10 @@ export default function App() {
     soundFx.setMuted(isMuted);
   }, [isMuted]);
 
-  // Lưu thông tin học sinh
-  const handleSaveStudentInfo = (info) => {
-    setStudentInfo(info);
-    localStorage.setItem(LOCAL_STORAGE_STUDENT, JSON.stringify(info));
-  };
-
-  // Đổi bạn học sinh khác (xóa thông tin để bạn mới nhập)
-  const handleEndSession = () => {
-    localStorage.removeItem(LOCAL_STORAGE_STUDENT);
-    setStudentInfo(null);
-    setSelectedProblem(null);
-  };
-
-  // Chọn vấn đề để gỡ rối
+  // Chọn vấn đề để gỡ rối - Vào thẳng ngay lập tức, không có bất kỳ popup nào
   const handleSelectProblem = (prob) => {
     soundFx.playChime();
     setSelectedProblem(prob);
-    // Nếu chưa có tên học sinh, mở nhẹ modal để ghi nhận
-    if (!studentInfo) {
-      setIsStudentModalOpen(true);
-    }
   };
 
   // Quay lại trang danh mục
@@ -85,8 +52,6 @@ export default function App() {
         setIsMuted={setIsMuted}
         isMusicPlaying={isMusicPlaying}
         setIsMusicPlaying={setIsMusicPlaying}
-        studentInfo={studentInfo}
-        onOpenStudentModal={() => setIsStudentModalOpen(true)}
         onOpenDashboard={() => setIsAdminDashboardOpen(true)}
         onGoHome={handleBackToTopics}
       />
@@ -97,13 +62,10 @@ export default function App() {
           <TopicSelector
             problems={problems}
             onSelectProblem={handleSelectProblem}
-            studentInfo={studentInfo}
-            onOpenStudentModal={() => setIsStudentModalOpen(true)}
           />
         ) : (
           <DecisionTree
             problem={selectedProblem}
-            studentInfo={studentInfo}
             onBackToTopics={handleBackToTopics}
           />
         )}
@@ -127,21 +89,11 @@ export default function App() {
         setIsMuted={setIsMuted}
         isMusicPlaying={isMusicPlaying}
         setIsMusicPlaying={setIsMusicPlaying}
-        studentInfo={studentInfo}
-        onOpenStudentModal={() => setIsStudentModalOpen(true)}
         onOpenDashboard={() => setIsAdminDashboardOpen(true)}
         onGoHome={handleBackToTopics}
       />
 
-      {/* Modals */}
-      <StudentModal
-        isOpen={isStudentModalOpen}
-        onClose={() => setIsStudentModalOpen(false)}
-        onSave={handleSaveStudentInfo}
-        onEndSession={handleEndSession}
-        currentInfo={studentInfo}
-      />
-
+      {/* Dashboard Thống kê dành cho Thầy cô */}
       <AdminDashboard
         isOpen={isAdminDashboardOpen}
         onClose={() => setIsAdminDashboardOpen(false)}
