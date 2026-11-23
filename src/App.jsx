@@ -5,6 +5,7 @@ import DecisionTree from './components/DecisionTree';
 import StudentModal from './components/StudentModal';
 import AdminDashboard from './components/AdminDashboard';
 import BackgroundMusic from './components/BackgroundMusic';
+import MobileBottomNav from './components/MobileBottomNav';
 import { soundFx } from './lib/sound';
 import { recordVisit, getVisitCount } from './lib/supabase';
 import questionsData from './data/questions_data.json';
@@ -91,7 +92,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6">
         {!selectedProblem ? (
           <TopicSelector
             problems={problems}
@@ -109,16 +110,28 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-16 border-t border-slate-200/80 bg-white py-8 text-center text-xs text-slate-500">
+      <footer className="mt-12 sm:mt-16 border-t-2 border-slate-200 bg-white py-8 text-center text-xs text-slate-500 pb-24 sm:pb-8">
         <div className="max-w-6xl mx-auto px-4 space-y-2">
-          <p className="font-medium text-slate-600">
+          <p className="font-bold text-slate-700">
             Trợ Lý Gỡ Rối Học Tập • Hệ thống hỗ trợ tâm lý & giải quyết áp lực học đường
           </p>
-          <p className="text-slate-400">
+          <p className="text-slate-400 font-medium">
             Dữ liệu tổng hợp từ các chuyên đề thực tế dành cho học sinh. Luôn có giải pháp cho mọi khó khăn!
           </p>
         </div>
       </footer>
+
+      {/* Mobile Bottom Navigation Bar (Chỉ hiển thị trên điện thoại) */}
+      <MobileBottomNav
+        isMuted={isMuted}
+        setIsMuted={setIsMuted}
+        isMusicPlaying={isMusicPlaying}
+        setIsMusicPlaying={setIsMusicPlaying}
+        studentInfo={studentInfo}
+        onOpenStudentModal={() => setIsStudentModalOpen(true)}
+        onOpenDashboard={() => setIsAdminDashboardOpen(true)}
+        onGoHome={handleBackToTopics}
+      />
 
       {/* Modals */}
       <StudentModal
