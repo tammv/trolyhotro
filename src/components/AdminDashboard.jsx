@@ -186,7 +186,7 @@ export default function AdminDashboard({ isOpen, onClose }) {
                 <div className="text-2xl sm:text-3xl font-extrabold text-indigo-900">
                   {sessions.length.toLocaleString('vi-VN')}
                 </div>
-                <div className="text-xs text-indigo-600 mt-1">Phiên tháo gỡ hoàn thành</div>
+                <div className="text-xs text-indigo-600 mt-1">Lượt tháo gỡ hoàn thành</div>
               </div>
 
               <div className="p-5 rounded-2xl bg-emerald-50/80 border border-emerald-200/70">
@@ -224,7 +224,7 @@ export default function AdminDashboard({ isOpen, onClose }) {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-400 py-4 text-center">Chưa có dữ liệu phiên</p>
+                  <p className="text-xs text-slate-400 py-4 text-center">Chưa có dữ liệu ghi nhận</p>
                 )}
               </div>
 
@@ -252,7 +252,7 @@ export default function AdminDashboard({ isOpen, onClose }) {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-400 py-4 text-center">Chưa có dữ liệu phiên</p>
+                  <p className="text-xs text-slate-400 py-4 text-center">Chưa có dữ liệu ghi nhận</p>
                 )}
               </div>
 
@@ -301,7 +301,7 @@ export default function AdminDashboard({ isOpen, onClose }) {
                     {sessions.length === 0 && (
                       <tr>
                         <td colSpan="5" className="px-3 py-6 text-center text-slate-400">
-                          Chưa có phiên học sinh nào được ghi nhận.
+                          Chưa có lượt học sinh nào được ghi nhận.
                         </td>
                       </tr>
                     )}

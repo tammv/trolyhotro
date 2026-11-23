@@ -84,11 +84,12 @@ export default function Header({
           {/* Nút thông tin học sinh */}
           <button
             onClick={onOpenStudentModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium border border-slate-200 transition-colors"
+            title={studentInfo ? "Bấm để xem hoặc đổi tên bạn" : "Nhập tên bạn để bắt đầu"}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 transition-colors cursor-pointer"
           >
             <User className="w-3.5 h-3.5 text-slate-500" />
             <span className="max-w-[80px] sm:max-w-[120px] truncate">
-              {studentInfo ? studentInfo.name : 'Nhập thông tin'}
+              {studentInfo ? studentInfo.name : 'Nhập tên bạn'}
             </span>
           </button>
 

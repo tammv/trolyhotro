@@ -48,7 +48,7 @@ export default function App() {
     localStorage.setItem(LOCAL_STORAGE_STUDENT, JSON.stringify(info));
   };
 
-  // Kết thúc phiên học sinh hiện tại (Đăng xuất để học sinh mới nhập)
+  // Đổi bạn học sinh khác (xóa thông tin để bạn mới nhập)
   const handleEndSession = () => {
     localStorage.removeItem(LOCAL_STORAGE_STUDENT);
     setStudentInfo(null);
