@@ -77,6 +77,48 @@ export default function TopicSelector({
   const [activeCategory, setActiveCategory] = useState('all');
   const [expandedId, setExpandedId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isMascotSpeaking, setIsMascotSpeaking] = useState(false);
+
+  // Tự động phát giọng chào mừng của StudyZen ở màn hình đầu
+  useEffect(() => {
+    if (!isStarted) {
+      let hasSpoken = false;
+
+      const triggerGreeting = () => {
+        if (hasSpoken) return;
+        hasSpoken = true;
+        setIsMascotSpeaking(true);
+        mascotVoice.speak(
+          "Chào bạn, hôm nay chúng ta cùng học gì nhé!",
+          () => setIsMascotSpeaking(false)
+        );
+      };
+
+      // 1. Tự động phát sau 600ms
+      const timer = setTimeout(() => {
+        triggerGreeting();
+      }, 600);
+
+      // 2. Dự phòng: nếu trình duyệt chặn autoplay trước khi người dùng tương tác,
+      // tự động phát ngay ở lần chạm/click đầu tiên của học sinh
+      const handleFirstInteraction = () => {
+        triggerGreeting();
+        window.removeEventListener('click', handleFirstInteraction);
+        window.removeEventListener('touchstart', handleFirstInteraction);
+      };
+
+      window.addEventListener('click', handleFirstInteraction, { once: true });
+      window.addEventListener('touchstart', handleFirstInteraction, { once: true });
+
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('click', handleFirstInteraction);
+        window.removeEventListener('touchstart', handleFirstInteraction);
+        mascotVoice.stop();
+        setIsMascotSpeaking(false);
+      };
+    }
+  }, [isStarted]);
 
   // Phân loại danh mục
   const categorizedProblems = useMemo(() => {
@@ -213,24 +255,44 @@ export default function TopicSelector({
                   className="cursor-pointer transition-transform hover:scale-105 active:scale-95"
                   onClick={() => {
                     soundFx.playPop();
-                    mascotVoice.speak("Chào bạn! Mình là StudyZen. Hôm nay chúng mình cùng tháo gỡ khó khăn trong học tập nhé!");
+                    setIsMascotSpeaking(true);
+                    mascotVoice.speak(
+                      "Chào bạn! Mình là StudyZen. Hôm nay chúng mình cùng tháo gỡ khó khăn trong học tập nhé!",
+                      () => setIsMascotSpeaking(false)
+                    );
                   }}
                   title="Bấm vào StudyZen để nghe lời chào!"
                 >
-                  <StudyZenMascot className="w-36 h-36 sm:w-44 sm:h-44" variant="celebrating" />
+                  <StudyZenMascot 
+                    className="w-36 h-36 sm:w-44 sm:h-44" 
+                    variant={isMascotSpeaking ? 'talking' : 'celebrating'} 
+                  />
                 </div>
 
                 {/* Nút nghe lời chào từ linh vật */}
                 <button
                   type="button"
                   onClick={() => {
-                    soundFx.playChime();
-                    mascotVoice.speak("Chào bạn! Mình là StudyZen. Bạn không cần phải giỏi ngay từ đầu, chúng mình sẽ cùng tháo gỡ từng nút thắt một nhé!");
+                    if (isMascotSpeaking) {
+                      mascotVoice.stop();
+                      setIsMascotSpeaking(false);
+                    } else {
+                      soundFx.playChime();
+                      setIsMascotSpeaking(true);
+                      mascotVoice.speak(
+                        "Chào bạn, hôm nay chúng ta cùng học gì nhé!",
+                        () => setIsMascotSpeaking(false)
+                      );
+                    }
                   }}
-                  className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-100 hover:bg-blue-200 dark:bg-[#12384a] dark:hover:bg-[#18485e] text-blue-700 dark:text-[#1cb0f6] text-xs font-bold transition-all border border-blue-200 dark:border-[#1c7aa6] shadow-xs cursor-pointer"
+                  className={`mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full transition-all border shadow-xs cursor-pointer text-xs font-bold ${
+                    isMascotSpeaking 
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-[0_2px_0_#1d4ed8]' 
+                      : 'bg-blue-100 hover:bg-blue-200 dark:bg-[#12384a] dark:hover:bg-[#18485e] text-blue-700 dark:text-[#1cb0f6] border-blue-200 dark:border-[#1c7aa6]'
+                  }`}
                 >
-                  <Volume2 className="w-3.5 h-3.5 animate-pulse" />
-                  <span>Nghe StudyZen chào bạn ✨</span>
+                  <Volume2 className={`w-3.5 h-3.5 ${isMascotSpeaking ? 'animate-bounce text-white' : 'animate-pulse'}`} />
+                  <span>{isMascotSpeaking ? 'StudyZen đang nói...' : 'Nghe StudyZen chào bạn ✨'}</span>
                 </button>
 
                 <div className="mt-2 text-[11px] text-slate-400 dark:text-[#8fa5b1] font-semibold">

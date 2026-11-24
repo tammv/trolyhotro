@@ -50,11 +50,31 @@ export default function DecisionTree({
   const [comment, setComment] = useState('');
   const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false);
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+  const [isCompanionSpeaking, setIsCompanionSpeaking] = useState(false);
 
   // Cuộn lên đầu khi đổi bước
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentStep]);
+
+  // Tự động phát giọng đọc của linh vật khi học sinh vào Bước 3 (Trang giải pháp)
+  useEffect(() => {
+    if (currentStep === 3 && !cheerModal.isOpen) {
+      const timer = setTimeout(() => {
+        setIsCompanionSpeaking(true);
+        mascotVoice.speak(
+          "Bạn làm rất tốt! Giờ chỉ cần làm thử từng bước nhỏ dưới đây, không cần vội vã. Nút thắt đã bắt đầu được gỡ rồi đấy!",
+          () => setIsCompanionSpeaking(false)
+        );
+      }, 400);
+
+      return () => {
+        clearTimeout(timer);
+        mascotVoice.stop();
+        setIsCompanionSpeaking(false);
+      };
+    }
+  }, [currentStep, cheerModal.isOpen]);
 
   const currentBranch = selectedBranchIndex !== null ? problem.Branches[selectedBranchIndex] : null;
 
@@ -394,8 +414,13 @@ export default function DecisionTree({
             </div>
 
             {/* Mascot Companion Encouragement Banner */}
-            <div className="flex items-center gap-3.5 p-4 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-[#1b2a34] dark:to-[#172630] border-2 border-blue-200 dark:border-[#1c7aa6] mb-5">
-              <StudyZenMascot className="w-14 h-14 sm:w-16 sm:h-16 shrink-0" variant="celebrating" />
+            <div className={`flex items-center gap-3.5 p-4 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-[#1b2a34] dark:to-[#172630] border-2 transition-all mb-5 ${
+              isCompanionSpeaking ? 'border-blue-400 dark:border-[#1cb0f6] shadow-[0_0_15px_rgba(37,99,235,0.2)]' : 'border-blue-200 dark:border-[#1c7aa6]'
+            }`}>
+              <StudyZenMascot 
+                className="w-14 h-14 sm:w-16 sm:h-16 shrink-0" 
+                variant={isCompanionSpeaking ? 'talking' : 'celebrating'} 
+              />
               <div className="flex-1">
                 <div className="text-xs font-black text-blue-700 dark:text-[#1cb0f6] flex items-center justify-between gap-1.5">
                   <span className="flex items-center gap-1.5">
@@ -405,13 +430,23 @@ export default function DecisionTree({
                   <button
                     type="button"
                     onClick={() => {
-                      soundFx.playChime();
-                      mascotVoice.speak("Bạn làm rất tốt! Giờ chỉ cần làm thử từng bước nhỏ dưới đây, không cần vội vã. Nút thắt đã bắt đầu được gỡ rồi đấy!");
+                      if (isCompanionSpeaking) {
+                        mascotVoice.stop();
+                        setIsCompanionSpeaking(false);
+                      } else {
+                        soundFx.playChime();
+                        setIsCompanionSpeaking(true);
+                        mascotVoice.speak(
+                          "Bạn làm rất tốt! Giờ chỉ cần làm thử từng bước nhỏ dưới đây, không cần vội vã. Nút thắt đã bắt đầu được gỡ rồi đấy!",
+                          () => setIsCompanionSpeaking(false)
+                        );
+                      }
                     }}
-                    title="Nghe lời nhắn từ StudyZen"
-                    className="p-1 rounded-lg hover:bg-blue-100 dark:hover:bg-[#1c3a4a] text-blue-600 dark:text-[#1cb0f6] transition-all cursor-pointer"
+                    title={isCompanionSpeaking ? "Dừng giọng đọc" : "Nghe lại lời nhắn từ StudyZen"}
+                    className="px-2 py-1 rounded-xl bg-blue-100 hover:bg-blue-200 dark:bg-[#1c3a4a] text-blue-600 dark:text-[#1cb0f6] transition-all cursor-pointer flex items-center gap-1.5 text-[11px] font-bold"
                   >
-                    <Volume2 className="w-4 h-4" />
+                    <Volume2 className={`w-3.5 h-3.5 ${isCompanionSpeaking ? 'animate-bounce text-blue-600 dark:text-[#1cb0f6]' : ''}`} />
+                    <span>{isCompanionSpeaking ? 'Đang đọc...' : 'Nghe lại'}</span>
                   </button>
                 </div>
                 <p className="text-xs sm:text-sm text-slate-700 dark:text-[#d1e1ea] font-bold leading-relaxed mt-0.5">
