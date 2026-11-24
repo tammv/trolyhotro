@@ -6,7 +6,7 @@ import {
   Sparkles, 
   ChevronDown, 
   ChevronUp, 
-  ChevronLeft,
+  ChevronLeft, 
   ChevronRight,
   Layers, 
   HelpCircle, 
@@ -31,9 +31,11 @@ import {
   Flame,
   Heart,
   ShieldCheck,
-  CheckCircle2
+  CheckCircle2,
+  Wind
 } from 'lucide-react';
 import { soundFx } from '../lib/sound';
+import QuickSupport from './QuickSupport';
 
 // Bản đồ icon và màu sắc cho từng tình huống cụ thể
 const PROBLEM_ICONS = {
@@ -64,7 +66,8 @@ const ITEMS_PER_PAGE = 6;
 
 export default function TopicSelector({ 
   problems, 
-  onSelectProblem 
+  onSelectProblem,
+  onOpenBreathingModal
 }) {
   const [isStarted, setIsStarted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -139,41 +142,105 @@ export default function TopicSelector({
     <div className="py-4 sm:py-10">
       
       {/* ============================================================== */}
-      {/* 1. MÀN HÌNH CHÀO ĐÓN (HERO 3D DUOLINGO VỚI NÚT 'GỠ RỐI CÙNG MÌNH NHÉ') */}
+      {/* 1. MÀN HÌNH CHÀO ĐÓN (HERO 3D DUOLINGO KẾ THỪA TỪ FILE HTML)    */}
       {/* ============================================================== */}
       {!isStarted ? (
-        <div className="max-w-4xl mx-auto text-center px-3 sm:px-4 py-6 sm:py-14 animate-fade-in-up">
+        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8 animate-fade-in-up">
 
-          {/* Hero Avatar 3D */}
-          <div className="w-20 h-20 sm:w-28 sm:h-28 mx-auto rounded-3xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-purple-500 flex items-center justify-center text-white border-4 border-white shadow-[0_8px_0_#1e40af] mb-6 sm:mb-8 animate-float">
-            <Heart className="w-10 h-10 sm:w-14 sm:h-14 fill-white/20 text-white" />
-          </div>
+          {/* Hero Card 2 cột */}
+          <div className="bg-white dark:bg-[#1c2b33] rounded-3xl border-2 border-slate-200 dark:border-[#37464f] shadow-[0_6px_0_#e2e8f0] dark:shadow-none p-6 sm:p-10 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center transition-colors">
+            
+            {/* Cột trái: Thông điệp đồng cảm */}
+            <div className="lg:col-span-7 space-y-4 sm:space-y-5 text-left">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-[#12384a] text-blue-700 dark:text-[#1cb0f6] text-xs font-black border border-blue-200 dark:border-[#1c7aa6]">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Góc nhỏ bình tâm · Không chấm điểm · Không phán xét</span>
+              </div>
 
-          <h1 className="text-2xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-[#e6eef2] tracking-tight leading-tight">
-            Gỡ Rối Áp Lực <br className="hidden sm:inline" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
-              Đồng Hành Cùng Bạn
-            </span>
-          </h1>
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-[#e6eef2] tracking-tight leading-tight">
+                Chào bạn, hôm nay việc học của bạn thế nào?
+              </h1>
 
-          <p className="mt-4 sm:mt-6 text-sm sm:text-lg text-slate-600 dark:text-[#8fa5b1] max-w-2xl mx-auto leading-relaxed px-2 font-medium">
-            Áp lực bài tập dồn dập, hạn nộp gấp gáp hay nỗi sợ điểm số? Bạn không phải chịu đựng một mình. Mọi rắc rối đều có nút thắt và từng bước tháo gỡ nhẹ nhàng.
-          </p>
+              <div className="rounded-2xl bg-slate-50 dark:bg-[#243640] border-2 border-slate-200/80 dark:border-[#37464f] p-4 sm:p-5">
+                <p className="text-xs sm:text-sm md:text-base font-bold text-slate-700 dark:text-[#d1e1ea] leading-relaxed italic">
+                  “Bạn không cần phải giỏi ngay từ đầu. Bạn chỉ cần có một nơi giúp mình hiểu rõ hơn và tiến bộ từng ngày.”
+                </p>
+              </div>
 
-          {/* Nút to 3D kiểu Duolingo 'Gỡ rối cùng mình nhé' */}
-          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 px-2">
-            <button
-              onClick={handleStart}
-              className="w-full sm:w-auto px-8 py-4 sm:px-12 sm:py-5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:brightness-105 active:translate-y-1 text-white text-base sm:text-xl font-black shadow-[0_6px_0_#1e3a8a] active:shadow-[0_1px_0_#1e3a8a] transition-all flex items-center justify-center gap-3 cursor-pointer btn-3d"
-            >
-              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-300" />
-              <span>Gỡ rối cùng mình nhé ✨</span>
-              <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-[#8fa5b1] leading-relaxed font-medium">
+                Mắc kẹt trước một bài tập khó hay lo lắng khi nhận lại bài kiểm tra là điều rất tự nhiên. Hãy chọn nút thắt bạn đang gặp, chúng mình sẽ cùng tháo gỡ từng chút một nhé.
+              </p>
+
+              {/* 2 Nút hành động chính */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                <button
+                  onClick={handleStart}
+                  className="px-7 py-4 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:brightness-105 active:translate-y-1 text-white text-sm sm:text-base font-black shadow-[0_5px_0_#1e3a8a] active:shadow-[0_1px_0_#1e3a8a] transition-all flex items-center justify-center gap-2.5 cursor-pointer btn-3d"
+                >
+                  <Sparkles className="w-4 h-4 text-yellow-300" />
+                  <span>Bắt đầu gỡ rối nhẹ nhàng</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+
+                <button
+                  onClick={onOpenBreathingModal}
+                  className="px-6 py-4 rounded-2xl bg-white dark:bg-[#243640] hover:bg-slate-50 dark:hover:bg-[#2e424e] text-teal-700 dark:text-[#2dd4bf] border-2 border-teal-200 dark:border-[#0d9488] shadow-[0_4px_0_#99f6e4] dark:shadow-none font-black text-sm sm:text-base transition-all flex items-center justify-center gap-2 cursor-pointer btn-3d"
+                >
+                  <Wind className="w-4 h-4 text-teal-600 dark:text-[#2dd4bf]" />
+                  <span>Hạ nhiệt 60 giây</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Cột phải: Minh họa SVG không gian học tập bình yên từ file HTML */}
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="w-full max-w-sm rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50/70 to-emerald-50/70 dark:from-[#1b2b34] dark:via-[#1e303b] dark:to-[#172d28] p-5 border-2 border-blue-100 dark:border-[#37464f] shadow-inner">
+                <svg viewBox="0 0 360 280" className="w-full h-auto drop-shadow-sm select-none" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Minh họa góc học tập bình yên của StudyZen">
+                  {/* Khung cửa sổ ánh sáng ấm */}
+                  <rect x="48" y="24" width="140" height="150" rx="20" fill="#FFFFFF" stroke="#DBEAFE" strokeWidth="3"/>
+                  <line x1="118" y1="24" x2="118" y2="174" stroke="#EFF6FF" strokeWidth="3"/>
+                  <line x1="48" y1="98" x2="188" y2="98" stroke="#EFF6FF" strokeWidth="3"/>
+                  
+                  {/* Mặt trời dịu & mây nhỏ */}
+                  <circle cx="84" cy="60" r="16" fill="#FDE68A"/>
+                  <path d="M132 76C132 69.3726 137.373 64 144 64C149.1 64 153.457 67.181 155.188 71.667C156.081 71.239 157.081 71 158.138 71C161.928 71 165 74.072 165 77.862C165 81.652 161.928 84.724 158.138 84.724H134.5C130.91 84.724 128 81.814 128 78.224C128 75.134 130.156 72.548 133.047 71.886" fill="#E0F2FE"/>
+
+                  {/* Chậu cây xanh hy vọng */}
+                  <rect x="235" y="138" width="46" height="42" rx="10" fill="#FDBA74"/>
+                  <path d="M258 138C258 112 240 100 226 105C229 122 243 132 258 138Z" fill="#22C55E"/>
+                  <path d="M258 138C258 106 278 92 294 98C290 118 275 130 258 138Z" fill="#16A34A"/>
+                  <line x1="258" y1="138" x2="258" y2="90" stroke="#15803D" strokeWidth="3" strokeLinecap="round"/>
+
+                  {/* Mặt bàn gỗ sáng */}
+                  <rect x="24" y="180" width="312" height="16" rx="8" fill="#CBD5E1"/>
+
+                  {/* Cuốn sổ mở với những dòng ghi chú nhẹ nhàng */}
+                  <path d="M74 166C74 159.373 79.3726 154 86 154H152C156.418 154 160 157.582 160 162V180H74V166Z" fill="#FFFFFF" stroke="#93C5FD" strokeWidth="2.5"/>
+                  <path d="M246 166C246 159.373 240.627 154 234 154H168C163.582 154 160 157.582 160 162V180H246V166Z" fill="#FFFFFF" stroke="#93C5FD" strokeWidth="2.5"/>
+                  <line x1="92" y1="166" x2="142" y2="166" stroke="#BFDBFE" strokeWidth="3" strokeLinecap="round"/>
+                  <line x1="178" y1="166" x2="226" y2="166" stroke="#BBF7D0" strokeWidth="3" strokeLinecap="round"/>
+
+                  {/* Thẻ nhắc nhở tích cực lơ lửng */}
+                  <g>
+                    <rect x="196" y="34" width="132" height="46" rx="14" fill="#FFFFFF" stroke="#E9D5FF" strokeWidth="2.5"/>
+                    <circle cx="218" cy="57" r="10" fill="#F3E8FF"/>
+                    <path d="M214 57L217 60L223 54" stroke="#8B5CF6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect x="236" y="49" width="74" height="6" rx="3" fill="#CBD5E1"/>
+                    <rect x="236" y="61" width="52" height="6" rx="3" fill="#E2E8F0"/>
+                  </g>
+
+                  {/* Nhãn thông điệp dưới bàn */}
+                  <rect x="78" y="214" width="204" height="38" rx="19" fill="#EFF6FF"/>
+                  <circle cx="102" cy="233" r="6" fill="#2563EB"/>
+                  <text x="116" y="238" fill="#1E40AF" fontFamily="system-ui, sans-serif" fontSize="12" fontWeight="700">Từng bước nhỏ, vững vàng hơn</text>
+                </svg>
+              </div>
+            </div>
+
           </div>
 
           {/* 3 Cam kết */}
-          <div className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 text-left max-w-3xl mx-auto pt-6 border-t-2 border-slate-200/70 dark:border-[#37464f] px-2">
+          <div className="mt-8 sm:mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 text-left max-w-4xl mx-auto pt-4 border-t-2 border-slate-200/70 dark:border-[#37464f] px-2">
             <div className="p-4 rounded-2xl bg-white dark:bg-[#1c2b33] border-2 border-slate-200 dark:border-[#37464f] shadow-[0_3px_0_#e2e8f0] dark:shadow-none">
               <div className="flex items-center gap-2 text-blue-600 dark:text-[#1cb0f6] font-black text-sm mb-1">
                 <CheckCircle2 className="w-4 h-4" /> 21 Tình huống thực tế
@@ -421,6 +488,11 @@ export default function TopicSelector({
 
         </div>
       )}
+
+      {/* ============================================================== */}
+      {/* 3. KHU VỰC HỖ TRỢ NHANH (3 TAB FAQ, MẸO HỌC, CHẠM CẢM XÚC)      */}
+      {/* ============================================================== */}
+      <QuickSupport onOpenBreathModal={onOpenBreathingModal} />
 
     </div>
   );

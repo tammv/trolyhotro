@@ -1,14 +1,13 @@
 import React from 'react';
-import { Sparkles, Volume2, VolumeX, Music, BarChart3, Sun, Moon } from 'lucide-react';
+import { Sparkles, Music, BarChart3, Sun, Moon, Heart } from 'lucide-react';
 
 export default function MobileBottomNav({
-  isMuted,
-  setIsMuted,
   isMusicPlaying,
   setIsMusicPlaying,
   isDarkMode,
   toggleDarkMode,
   onOpenDashboard,
+  onOpenBreathingModal,
   onGoHome
 }) {
   return (
@@ -23,15 +22,13 @@ export default function MobileBottomNav({
         <span className="text-[10px] font-bold mt-0.5">Trang chủ</span>
       </button>
 
-      {/* 2. Âm thanh click */}
+      {/* 2. Hạ nhiệt 60s */}
       <button
-        onClick={() => setIsMuted(!isMuted)}
-        className={`flex flex-col items-center justify-center p-2 rounded-xl active:scale-95 transition-transform ${
-          isMuted ? 'text-slate-400 dark:text-slate-500' : 'text-blue-600 dark:text-[#1cb0f6] font-bold'
-        }`}
+        onClick={onOpenBreathingModal}
+        className="flex flex-col items-center justify-center p-2 rounded-xl text-teal-600 dark:text-[#2dd4bf] active:scale-95 transition-transform"
       >
-        {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-        <span className="text-[10px] mt-0.5">{isMuted ? 'Tắt âm' : 'Âm thanh'}</span>
+        <Heart className="w-5 h-5 text-teal-500" />
+        <span className="text-[10px] font-bold mt-0.5">Hạ nhiệt</span>
       </button>
 
       {/* 3. Nhạc nền thư giãn */}

@@ -28,6 +28,8 @@ export default function DecisionTree({
   const [selectedSubIndex, setSelectedSubIndex] = useState(null);
   const [encouragement, setEncouragement] = useState('');
   const [copied, setCopied] = useState(false);
+  const [focusMode, setFocusMode] = useState(false);
+  const [scratchpad, setScratchpad] = useState('');
 
   // Trạng thái đánh giá & góp ý
   const [rating, setRating] = useState(5);
@@ -154,9 +156,21 @@ export default function DecisionTree({
 
       {/* THANH TIẾN TRÌNH 3D CANDY PROGRESS BAR (DUOLINGO STYLE) */}
       <div className="bg-white dark:bg-[#1c2b33] rounded-3xl p-4 sm:p-5 border-2 border-slate-200 dark:border-[#37464f] shadow-[0_4px_0_#e2e8f0] dark:shadow-none mb-5">
-        <div className="flex items-center justify-between text-xs sm:text-sm font-black text-slate-600 dark:text-[#8fa5b1] mb-2.5">
-          <span>Tiến trình gỡ rối</span>
-          <span className="text-blue-600 dark:text-[#1cb0f6]">Bước {currentStep} / 3</span>
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm font-black text-slate-600 dark:text-[#8fa5b1] mb-2.5">
+          <div className="flex items-center gap-2">
+            <span>Tiến trình gỡ rối</span>
+            <span className="text-blue-600 dark:text-[#1cb0f6]">Bước {currentStep} / 3</span>
+          </div>
+
+          <label className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-[#8fa5b1] cursor-pointer select-none">
+            <input 
+              type="checkbox" 
+              checked={focusMode} 
+              onChange={(e) => setFocusMode(e.target.checked)}
+              className="rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
+            />
+            <span>Chế độ tập trung (ẩn chi tiết phụ)</span>
+          </label>
         </div>
         
         {/* Thanh 3D lõm sâu */}
@@ -175,7 +189,7 @@ export default function DecisionTree({
       </div>
 
       {/* Lời động viên nổi bật */}
-      {encouragement && (
+      {!focusMode && encouragement && (
         <div className="mb-5 p-4 rounded-3xl bg-amber-50 dark:bg-[#322714] border-2 border-amber-200 dark:border-[#634b1a] shadow-[0_3px_0_#fde68a] dark:shadow-none flex items-start gap-3 animate-in fade-in duration-300">
           <div className="p-2 rounded-2xl bg-amber-100 dark:bg-[#4d3810] text-amber-700 dark:text-[#f7cd46] shrink-0 mt-0.5">
             <Sparkles className="w-4 h-4 text-amber-600 dark:text-[#f7cd46]" />
@@ -201,7 +215,7 @@ export default function DecisionTree({
             <h2 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-[#e6eef2] tracking-tight leading-snug">
               {problem.Title}
             </h2>
-            {problem.Intro && (
+            {!focusMode && problem.Intro && (
               <p className="mt-3 text-xs sm:text-sm text-slate-600 dark:text-[#8fa5b1] leading-relaxed whitespace-pre-line border-l-4 border-blue-500 pl-3.5 py-1 bg-slate-50 dark:bg-[#243640] rounded-r-xl font-medium">
                 {problem.Intro}
               </p>
@@ -250,7 +264,7 @@ export default function DecisionTree({
             <h2 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-[#e6eef2]">
               {currentBranch.BranchTitle || currentBranch.OptionText}
             </h2>
-            {currentBranch.Intro && (
+            {!focusMode && currentBranch.Intro && (
               <p className="mt-2.5 text-xs sm:text-sm text-slate-600 dark:text-[#8fa5b1] leading-relaxed whitespace-pre-line border-l-4 border-indigo-500 pl-3.5 py-1 bg-slate-50 dark:bg-[#243640] rounded-r-xl font-medium">
                 {currentBranch.Intro}
               </p>
@@ -344,6 +358,21 @@ export default function DecisionTree({
 
               <div className="text-slate-700 dark:text-[#d1e1ea] text-sm sm:text-base leading-relaxed space-y-3 whitespace-pre-line bg-slate-50 dark:bg-[#243640] p-4 sm:p-6 rounded-2xl border-2 border-slate-200 dark:border-[#37464f] font-medium">
                 {currentSolution.Guide}
+              </div>
+
+              {/* Góc nháp nhỏ của riêng bạn (từ file HTML) */}
+              <div className="mt-4 p-4 rounded-2xl bg-white dark:bg-[#1c2b33] border-2 border-dashed border-slate-300 dark:border-[#37464f] space-y-2">
+                <label htmlFor="scratchpad" className="block text-xs font-black text-slate-700 dark:text-[#e6eef2] uppercase tracking-wider">
+                  ✍️ Góc nháp của riêng bạn (không ai chấm điểm dòng này):
+                </label>
+                <textarea
+                  id="scratchpad"
+                  rows={2}
+                  value={scratchpad}
+                  onChange={(e) => setScratchpad(e.target.value)}
+                  placeholder="Thử viết 1 câu trả lời nháp, 1 lời nhận xét cần sửa hoặc 1 ý nhỏ bạn vừa nghĩ ra..."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#243640] border-2 border-slate-200 dark:border-[#37464f] focus:outline-hidden focus:border-blue-500 text-xs sm:text-sm text-slate-800 dark:text-[#e6eef2] font-medium transition-all"
+                />
               </div>
             </div>
 

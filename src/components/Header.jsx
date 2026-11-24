@@ -10,6 +10,7 @@ export default function Header({
   isDarkMode,
   toggleDarkMode,
   onOpenDashboard,
+  onOpenBreathingModal,
   onGoHome
 }) {
   return (
@@ -42,6 +43,16 @@ export default function Header({
         {/* Right Actions */}
         <div className="flex items-center gap-2">
           
+          {/* Nút Hạ nhiệt 60s */}
+          <button
+            onClick={onOpenBreathingModal}
+            title="Dành 60 giây thở đều để dịu tâm trí"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-50 dark:bg-[#12384a] hover:bg-teal-100 dark:hover:bg-[#184d63] text-teal-700 dark:text-[#2dd4bf] border-2 border-teal-200 dark:border-[#0d9488] shadow-[0_2px_0_#99f6e4] dark:shadow-none text-xs font-black transition-all cursor-pointer btn-3d"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-teal-600 dark:text-[#2dd4bf]" />
+            <span className="hidden sm:inline">Hạ nhiệt 60s</span>
+          </button>
+
           {/* Visitor Counter Badge */}
           <div 
             title="Tổng số lượt truy cập đã hỗ trợ học sinh"

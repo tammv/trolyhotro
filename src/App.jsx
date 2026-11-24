@@ -5,6 +5,7 @@ import DecisionTree from './components/DecisionTree';
 import AdminDashboard from './components/AdminDashboard';
 import BackgroundMusic from './components/BackgroundMusic';
 import MobileBottomNav from './components/MobileBottomNav';
+import BreathingModal from './components/BreathingModal';
 import { soundFx } from './lib/sound';
 import { recordVisit, getVisitCount } from './lib/supabase';
 import questionsData from './data/questions_data.json';
@@ -15,6 +16,7 @@ export default function App() {
   const [problems] = useState(questionsData);
   const [selectedProblem, setSelectedProblem] = useState(null);
   const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState(false);
+  const [isBreathingModalOpen, setIsBreathingModalOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [visitCount, setVisitCount] = useState(0);
@@ -80,6 +82,7 @@ export default function App() {
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}
         onOpenDashboard={() => setIsAdminDashboardOpen(true)}
+        onOpenBreathingModal={() => setIsBreathingModalOpen(true)}
         onGoHome={handleBackToTopics}
       />
 
@@ -89,6 +92,7 @@ export default function App() {
           <TopicSelector
             problems={problems}
             onSelectProblem={handleSelectProblem}
+            onOpenBreathingModal={() => setIsBreathingModalOpen(true)}
           />
         ) : (
           <DecisionTree
@@ -112,14 +116,19 @@ export default function App() {
 
       {/* Mobile Bottom Navigation Bar (Chỉ hiển thị trên điện thoại) */}
       <MobileBottomNav
-        isMuted={isMuted}
-        setIsMuted={setIsMuted}
         isMusicPlaying={isMusicPlaying}
         setIsMusicPlaying={setIsMusicPlaying}
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}
         onOpenDashboard={() => setIsAdminDashboardOpen(true)}
+        onOpenBreathingModal={() => setIsBreathingModalOpen(true)}
         onGoHome={handleBackToTopics}
+      />
+
+      {/* Modal Bài tập hạ nhiệt 60s */}
+      <BreathingModal
+        isOpen={isBreathingModalOpen}
+        onClose={() => setIsBreathingModalOpen(false)}
       />
 
       {/* Dashboard Thống kê dành cho Thầy cô */}
