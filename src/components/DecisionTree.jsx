@@ -13,13 +13,15 @@ import {
   Heart,
   Star,
   MessageSquare,
-  Send
+  Send,
+  Volume2
 } from 'lucide-react';
 import { soundFx } from '../lib/sound';
 import { getRandomQuote } from '../lib/motivationalQuotes';
 import { saveStudentSession, saveStudentFeedback } from '../lib/supabase';
 import StudyZenMascot from './StudyZenMascot';
 import MascotCheerModal from './MascotCheerModal';
+import { convertEmToBan, mascotVoice } from '../lib/ttsVoice';
 
 export default function DecisionTree({ 
   problem, 
@@ -62,7 +64,8 @@ export default function DecisionTree({
 
   const handleSelectRootOption = (optionIndex) => {
     soundFx.playChime();
-    const optText = problem.Options[optionIndex]?.Text || 'khó khăn này';
+    const rawOptText = problem.Options[optionIndex]?.Text || 'khó khăn này';
+    const optText = convertEmToBan(rawOptText);
     const quote = getRandomQuote();
     setEncouragement(quote);
 
@@ -82,14 +85,15 @@ export default function DecisionTree({
 
   const handleSelectSubOption = (subIndex) => {
     soundFx.playSuccess();
-    const solTitle = currentBranch?.Solutions?.[subIndex]?.Title || currentBranch?.Solutions?.[0]?.Title || '';
+    const rawSolTitle = currentBranch?.Solutions?.[subIndex]?.Title || currentBranch?.Solutions?.[0]?.Title || '';
+    const solTitle = convertEmToBan(rawSolTitle);
     const quote = getRandomQuote();
     setEncouragement(quote);
 
     setCheerModal({
       isOpen: true,
       title: "Sắp xong rồi, nút thắt đã mở! 🎉",
-      message: `Tuyệt vời! Chúng mình đã có hướng gỡ rối cụ thể cho bạn: "${solTitle}". Hãy cùng xem từng bước hành động nhé!`,
+      message: `Tuyệt vời! Chúng mình đã có hướng gỡ rối cụ thể: "${solTitle}". Hãy cùng xem từng bước hành động nhé!`,
       buttonText: "Khám phá giải pháp ngay 🚀",
       isLastStep: true,
       action: () => {
@@ -392,10 +396,23 @@ export default function DecisionTree({
             {/* Mascot Companion Encouragement Banner */}
             <div className="flex items-center gap-3.5 p-4 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-[#1b2a34] dark:to-[#172630] border-2 border-blue-200 dark:border-[#1c7aa6] mb-5">
               <StudyZenMascot className="w-14 h-14 sm:w-16 sm:h-16 shrink-0" variant="celebrating" />
-              <div>
-                <div className="text-xs font-black text-blue-700 dark:text-[#1cb0f6] flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-yellow-500 fill-yellow-400" />
-                  <span>StudyZen luôn đồng hành cùng bạn:</span>
+              <div className="flex-1">
+                <div className="text-xs font-black text-blue-700 dark:text-[#1cb0f6] flex items-center justify-between gap-1.5">
+                  <span className="flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-yellow-500 fill-yellow-400" />
+                    <span>StudyZen luôn đồng hành cùng bạn:</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundFx.playChime();
+                      mascotVoice.speak("Bạn làm rất tốt! Giờ chỉ cần làm thử từng bước nhỏ dưới đây, không cần vội vã. Nút thắt đã bắt đầu được gỡ rồi đấy!");
+                    }}
+                    title="Nghe lời nhắn từ StudyZen"
+                    className="p-1 rounded-lg hover:bg-blue-100 dark:hover:bg-[#1c3a4a] text-blue-600 dark:text-[#1cb0f6] transition-all cursor-pointer"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                  </button>
                 </div>
                 <p className="text-xs sm:text-sm text-slate-700 dark:text-[#d1e1ea] font-bold leading-relaxed mt-0.5">
                   “Bạn làm rất tốt! Giờ chỉ cần làm thử từng bước nhỏ dưới đây, không cần vội vã. Nút thắt đã bắt đầu được gỡ rồi đấy!”

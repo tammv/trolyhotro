@@ -213,28 +213,28 @@ export default function TopicSelector({
                   className="cursor-pointer transition-transform hover:scale-105 active:scale-95"
                   onClick={() => {
                     soundFx.playPop();
-                    mascotVoice.speak("Chào bạn! Mình là linh vật StudyZen. Hôm nay chúng ta cùng tháo gỡ khó khăn trong học tập nhé!");
+                    mascotVoice.speak("Chào bạn! Mình là StudyZen. Hôm nay chúng mình cùng tháo gỡ khó khăn trong học tập nhé!");
                   }}
-                  title="Bấm vào linh vật để nghe lời chào!"
+                  title="Bấm vào StudyZen để nghe lời chào!"
                 >
                   <StudyZenMascot className="w-36 h-36 sm:w-44 sm:h-44" variant="celebrating" />
                 </div>
 
-                {/* Nút nghe giọng nói linh vật */}
+                {/* Nút nghe lời chào từ linh vật */}
                 <button
                   type="button"
                   onClick={() => {
                     soundFx.playChime();
-                    mascotVoice.speak("Chào bạn! Mình là linh vật StudyZen. Bạn không cần phải giỏi ngay từ đầu, chúng mình sẽ cùng tháo gỡ từng nút thắt một nhé!");
+                    mascotVoice.speak("Chào bạn! Mình là StudyZen. Bạn không cần phải giỏi ngay từ đầu, chúng mình sẽ cùng tháo gỡ từng nút thắt một nhé!");
                   }}
                   className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-100 hover:bg-blue-200 dark:bg-[#12384a] dark:hover:bg-[#18485e] text-blue-700 dark:text-[#1cb0f6] text-xs font-bold transition-all border border-blue-200 dark:border-[#1c7aa6] shadow-xs cursor-pointer"
                 >
                   <Volume2 className="w-3.5 h-3.5 animate-pulse" />
-                  <span>Nghe StudyZen chào bạn (Giọng AI)</span>
+                  <span>Nghe StudyZen chào bạn ✨</span>
                 </button>
 
                 <div className="mt-2 text-[11px] text-slate-400 dark:text-[#8fa5b1] font-semibold">
-                  Linh vật chính thức StudyZen · Đồng hành cùng bạn
+                  StudyZen · Người bạn đồng hành cùng bạn
                 </div>
               </div>
             </div>

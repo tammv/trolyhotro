@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Sparkles, ArrowRight, Volume2, VolumeX, Heart, CheckCircle2 } from 'lucide-react';
 import StudyZenMascot from './StudyZenMascot';
-import { mascotVoice } from '../lib/ttsVoice';
+import { mascotVoice, convertEmToBan } from '../lib/ttsVoice';
 import { soundFx } from '../lib/sound';
 import confetti from 'canvas-confetti';
 
@@ -15,6 +15,11 @@ export default function MascotCheerModal({
 }) {
   const [isSpeaking, setIsSpeaking] = useState(false);
 
+  // Đảm bảo lời nhắn luôn dùng ngôi "Bạn" thân thiện, không bao giờ dùng "Em"
+  const formattedMessage = useMemo(() => {
+    return convertEmToBan(message);
+  }, [message]);
+
   useEffect(() => {
     if (isOpen) {
       soundFx.playSuccess();
@@ -26,7 +31,7 @@ export default function MascotCheerModal({
 
       // Phát giọng nói tiếng Việt hào hứng của mascot StudyZen
       setIsSpeaking(true);
-      mascotVoice.speak(message, () => {
+      mascotVoice.speak(formattedMessage, () => {
         setIsSpeaking(false);
       });
     } else {
@@ -37,12 +42,12 @@ export default function MascotCheerModal({
     return () => {
       mascotVoice.stop();
     };
-  }, [isOpen, message]);
+  }, [isOpen, formattedMessage]);
 
   const handleReplayVoice = () => {
     soundFx.playChime();
     setIsSpeaking(true);
-    mascotVoice.speak(message, () => {
+    mascotVoice.speak(formattedMessage, () => {
       setIsSpeaking(false);
     });
   };
@@ -110,7 +115,7 @@ export default function MascotCheerModal({
           </div>
 
           <p className="text-sm sm:text-base text-slate-700 dark:text-[#d1e1ea] font-bold leading-relaxed pt-1">
-            "{message}"
+            {formattedMessage}
           </p>
         </div>
 
