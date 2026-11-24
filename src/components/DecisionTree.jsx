@@ -18,6 +18,8 @@ import {
 import { soundFx } from '../lib/sound';
 import { getRandomQuote } from '../lib/motivationalQuotes';
 import { saveStudentSession, saveStudentFeedback } from '../lib/supabase';
+import StudyZenMascot from './StudyZenMascot';
+import MascotCheerModal from './MascotCheerModal';
 
 export default function DecisionTree({ 
   problem, 
@@ -30,6 +32,16 @@ export default function DecisionTree({
   const [copied, setCopied] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
   const [scratchpad, setScratchpad] = useState('');
+
+  // Trạng thái Màn hình Linh vật Cổ vũ tràn viền (Duolingo Style)
+  const [cheerModal, setCheerModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    buttonText: '',
+    isLastStep: false,
+    action: null
+  });
 
   // Trạng thái đánh giá & góp ý
   const [rating, setRating] = useState(5);
@@ -50,36 +62,67 @@ export default function DecisionTree({
 
   const handleSelectRootOption = (optionIndex) => {
     soundFx.playChime();
-    setSelectedBranchIndex(optionIndex);
-    setSelectedSubIndex(null);
-    setEncouragement(getRandomQuote());
-    setCurrentStep(2);
+    const optText = problem.Options[optionIndex]?.Text || 'khó khăn này';
+    const quote = getRandomQuote();
+    setEncouragement(quote);
+
+    setCheerModal({
+      isOpen: true,
+      title: "Bạn đã nhìn đúng trọng tâm rồi! 👏",
+      message: `Hay lắm! Bạn đã xác định rõ: "${optText}". ${quote} Cùng mình đi tiếp một bước nữa nhé!`,
+      buttonText: "Xem bước tiếp theo nào ✨",
+      isLastStep: false,
+      action: () => {
+        setSelectedBranchIndex(optionIndex);
+        setSelectedSubIndex(null);
+        setCurrentStep(2);
+      }
+    });
   };
 
   const handleSelectSubOption = (subIndex) => {
     soundFx.playSuccess();
-    setSelectedSubIndex(subIndex);
-    setEncouragement(getRandomQuote());
-    setCurrentStep(3);
+    const solTitle = currentBranch?.Solutions?.[subIndex]?.Title || currentBranch?.Solutions?.[0]?.Title || '';
+    const quote = getRandomQuote();
+    setEncouragement(quote);
 
-    confetti({
-      particleCount: 60,
-      spread: 70,
-      origin: { y: 0.7 }
-    });
+    setCheerModal({
+      isOpen: true,
+      title: "Sắp xong rồi, nút thắt đã mở! 🎉",
+      message: `Tuyệt vời! Chúng mình đã có hướng gỡ rối cụ thể cho bạn: "${solTitle}". Hãy cùng xem từng bước hành động nhé!`,
+      buttonText: "Khám phá giải pháp ngay 🚀",
+      isLastStep: true,
+      action: () => {
+        setSelectedSubIndex(subIndex);
+        setCurrentStep(3);
 
-    saveStudentSession({
-      student_name: 'Học sinh',
-      grade_class: 'Chung',
-      school_name: 'Trường học',
-      problem_id: problem.Code,
-      problem_title: problem.Title,
-      selected_branches: {
-        step1: problem.Options[selectedBranchIndex]?.Text || '',
-        step2: currentBranch?.SubOptions[subIndex]?.Text || '',
-        solution_title: currentBranch?.Solutions?.[subIndex]?.Title || ''
+        confetti({
+          particleCount: 70,
+          spread: 80,
+          origin: { y: 0.7 }
+        });
+
+        saveStudentSession({
+          student_name: 'Học sinh',
+          grade_class: 'Chung',
+          school_name: 'Trường học',
+          problem_id: problem.Code,
+          problem_title: problem.Title,
+          selected_branches: {
+            step1: problem.Options[selectedBranchIndex]?.Text || '',
+            step2: currentBranch?.SubOptions?.[subIndex]?.Text || '',
+            solution_title: solTitle
+          }
+        });
       }
     });
+  };
+
+  const closeCheerModalAndProceed = () => {
+    if (cheerModal.action) {
+      cheerModal.action();
+    }
+    setCheerModal(prev => ({ ...prev, isOpen: false }));
   };
 
   const handleGoBack = () => {
@@ -346,6 +389,20 @@ export default function DecisionTree({
               </button>
             </div>
 
+            {/* Mascot Companion Encouragement Banner */}
+            <div className="flex items-center gap-3.5 p-4 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-[#1b2a34] dark:to-[#172630] border-2 border-blue-200 dark:border-[#1c7aa6] mb-5">
+              <StudyZenMascot className="w-14 h-14 sm:w-16 sm:h-16 shrink-0" variant="celebrating" />
+              <div>
+                <div className="text-xs font-black text-blue-700 dark:text-[#1cb0f6] flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-yellow-500 fill-yellow-400" />
+                  <span>StudyZen luôn đồng hành cùng bạn:</span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-700 dark:text-[#d1e1ea] font-bold leading-relaxed mt-0.5">
+                  “Bạn làm rất tốt! Giờ chỉ cần làm thử từng bước nhỏ dưới đây, không cần vội vã. Nút thắt đã bắt đầu được gỡ rồi đấy!”
+                </p>
+              </div>
+            </div>
+
             <h2 className="text-lg sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-[#e6eef2] tracking-tight leading-snug">
               {currentSolution.Title}
             </h2>
@@ -487,6 +544,16 @@ export default function DecisionTree({
 
         </div>
       )}
+
+      {/* Duolingo-style Fullscreen Mascot Cheering Sheet */}
+      <MascotCheerModal
+        isOpen={cheerModal.isOpen}
+        title={cheerModal.title}
+        message={cheerModal.message}
+        buttonText={cheerModal.buttonText}
+        isLastStep={cheerModal.isLastStep}
+        onContinue={closeCheerModalAndProceed}
+      />
 
     </div>
   );

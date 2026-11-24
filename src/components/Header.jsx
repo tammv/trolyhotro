@@ -1,5 +1,6 @@
 import React from 'react';
 import { Volume2, VolumeX, Music, BarChart3, Sparkles, Sun, Moon } from 'lucide-react';
+import StudyZenMascot from './StudyZenMascot';
 
 export default function Header({ 
   visitCount, 
@@ -17,13 +18,13 @@ export default function Header({
     <header className="sticky top-0 z-30 bg-white/90 dark:bg-[#131f24]/90 backdrop-blur-md border-b-2 border-slate-200/80 dark:border-[#37464f] shadow-2xs transition-colors">
       <div className="max-w-6xl mx-auto px-3.5 sm:px-6 h-16 flex items-center justify-between">
         
-        {/* Brand / Logo kiểu Duolingo 3D */}
+        {/* Brand / Logo kiểu Duolingo 3D với Linh vật StudyZen */}
         <div 
           onClick={onGoHome}
           className="flex items-center gap-2.5 cursor-pointer group select-none"
         >
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-[0_3px_0_#1e40af] group-active:translate-y-0.5 group-active:shadow-none transition-all">
-            <Sparkles className="w-5 h-5 text-yellow-300" />
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-purple-500 flex items-center justify-center p-0.5 shadow-[0_3px_0_#1e40af] group-hover:scale-105 group-active:translate-y-0.5 group-active:shadow-none transition-all overflow-hidden shrink-0">
+            <StudyZenMascot className="w-9 h-9 sm:w-10 sm:h-10 scale-110" animated={false} />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
