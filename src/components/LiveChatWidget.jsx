@@ -92,9 +92,6 @@ export default function LiveChatWidget() {
                   </div>
                   <div>
                     <div className="text-xs sm:text-sm font-black">Chat trực tiếp trên web</div>
-                    <div className="text-[11px] text-blue-100 font-medium">
-                      Báo thẳng tới điện thoại cô · Ẩn danh
-                    </div>
                   </div>
                 </div>
                 <Send className="w-4 h-4 shrink-0" />
