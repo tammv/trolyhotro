@@ -51,6 +51,11 @@ class SoundManager {
     }
   }
 
+  // Âm thanh bật nhẹ (Pop) khi bấm nút nổi hoặc linh vật
+  playPop() {
+    this.playChime();
+  }
+
   // Âm thanh khi quay lại (Soft bubble pop)
   playBack() {
     if (this.isMuted) return;
