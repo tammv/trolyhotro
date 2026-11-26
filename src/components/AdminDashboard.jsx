@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   BarChart3, 
   Users, 
@@ -12,10 +12,9 @@ import {
   MessageSquare,
   Download,
   ThumbsUp,
-  Smile,
-  Heart
+  RefreshCw
 } from 'lucide-react';
-import { getAllSessions, getVisitCount, getAllFeedbacks } from '../lib/supabase';
+import { getAllSessions, getVisitCount, getAllFeedbacksWithStatus } from '../lib/supabase';
 
 const RATING_LEVELS = [
   { score: 5, label: 'Tuyệt vời!', emoji: '🤩', color: 'bg-emerald-500' },
@@ -33,32 +32,34 @@ export default function AdminDashboard({ isOpen, onClose }) {
   const [sessions, setSessions] = useState([]);
   const [feedbacks, setFeedbacks] = useState([]);
   const [totalVisits, setTotalVisits] = useState(0);
+  const [feedbackSyncError, setFeedbackSyncError] = useState(null);
 
   const CORRECT_PIN = '2026';
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadData();
-    }
-  }, [isAuthenticated]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [visits, sess, fbs] = await Promise.all([
+      const [visits, sess, fbResult] = await Promise.all([
         getVisitCount(),
         getAllSessions(),
-        getAllFeedbacks()
+        getAllFeedbacksWithStatus()
       ]);
       setTotalVisits(visits);
       setSessions(sess || []);
-      setFeedbacks(fbs || []);
+      setFeedbacks(fbResult?.data || []);
+      setFeedbackSyncError(fbResult?.error || null);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (isOpen && isAuthenticated) {
+      loadData();
+    }
+  }, [isOpen, isAuthenticated, loadData]);
 
   const handleVerifyPin = (e) => {
     e.preventDefault();
@@ -154,12 +155,24 @@ export default function AdminDashboard({ isOpen, onClose }) {
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            {isAuthenticated && (
+              <button
+                onClick={loadData}
+                disabled={loading}
+                title="Làm mới số liệu"
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Chưa xác thực PIN (Đã xóa dòng chữ Mặc định 2026) */}
@@ -200,6 +213,18 @@ export default function AdminDashboard({ isOpen, onClose }) {
         ) : (
           /* Đã xác thực - Hiển thị Dashboard */
           <div className="p-5 sm:p-8 space-y-6 max-h-[82vh] overflow-y-auto">
+
+            {feedbackSyncError && (
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-300 dark:border-amber-700/60 text-amber-900 dark:text-amber-200 flex items-start gap-2.5 text-xs sm:text-sm">
+                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-bold">Chưa đồng bộ được đánh giá & góp ý từ máy chủ chung (Supabase)</p>
+                  <p className="text-xs opacity-90 mt-0.5">
+                    Hiện chỉ hiển thị đánh giá lưu cục bộ trên thiết bị này. Vui lòng kiểm tra lại bảng <code className="font-mono font-bold">student_feedbacks</code> và quyền RLS trên Supabase ({feedbackSyncError}).
+                  </p>
+                </div>
+              </div>
+            )}
             
             {/* 4 Khối KPI Cards 3D phong cách Duolingo */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">

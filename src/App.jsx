@@ -6,6 +6,7 @@ import AdminDashboard from './components/AdminDashboard';
 import BackgroundMusic from './components/BackgroundMusic';
 import MobileBottomNav from './components/MobileBottomNav';
 import BreathingModal from './components/BreathingModal';
+import LiveChatWidget from './components/LiveChatWidget';
 import { soundFx } from './lib/sound';
 import { recordVisit, getVisitCount } from './lib/supabase';
 import questionsData from './data/questions_data.json';
@@ -136,6 +137,9 @@ export default function App() {
         isOpen={isAdminDashboardOpen}
         onClose={() => setIsAdminDashboardOpen(false)}
       />
+
+      {/* Nút Chat trực tiếp ẩn danh & kết nối Zalo cô giáo */}
+      <LiveChatWidget />
 
     </div>
   );
