@@ -414,7 +414,7 @@ export default function DecisionTree({
             </div>
 
             {/* Mascot Companion Encouragement Banner */}
-            <div className={`flex items-center gap-3.5 p-4 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-[#1b2a34] dark:to-[#172630] border-2 transition-all mb-5 ${
+            <div className={`flex items-center gap-3.5 p-4 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-[#1b2a34] dark:via-[#1e303b] dark:to-[#172630] border-2 transition-all mb-5 ${
               isCompanionSpeaking ? 'border-blue-400 dark:border-[#1cb0f6] shadow-[0_0_15px_rgba(37,99,235,0.2)]' : 'border-blue-200 dark:border-[#1c7aa6]'
             }`}>
               <StudyZenMascot 

@@ -54,25 +54,52 @@ export function formatSentenceCase(str) {
 }
 
 /**
- * StudyZen Text-to-Speech (Web Speech API)
- * Hoàn toàn miễn phí (0đ), chạy trực tiếp trên trình duyệt, không cần API key.
+ * StudyZen Text-to-Speech
+ * Ưu tiên giọng đọc tiếng Việt (vi-VN) có sẵn trên trình duyệt.
+ * Nếu thiết bị không có giọng tiếng Việt (tránh đọc nhầm sang giọng tiếng Anh mặc định),
+ * hệ thống tự động chuyển sang phát âm thanh tiếng Việt trực tuyến (Google TTS) hoặc im lặng an toàn.
  */
 class StudyZenVoice {
   constructor() {
     this.isMuted = false;
     this.synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
     this.cachedVoice = null;
+    this.currentAudio = null;
+    this.playbackId = 0;
     this.initVoice();
+  }
+
+  findVietnameseVoice(voices = []) {
+    if (!voices || voices.length === 0) return null;
+
+    const viVoices = voices.filter((v) => {
+      const lang = (v.lang || '').toLowerCase().replace('_', '-');
+      const name = (v.name || '').toLowerCase();
+      return (
+        lang === 'vi-vn' ||
+        lang.startsWith('vi-') ||
+        lang === 'vi' ||
+        name.includes('vietnam') ||
+        name.includes('tiếng việt') ||
+        name.includes('tieng viet')
+      );
+    });
+
+    if (viVoices.length === 0) return null;
+
+    // Ưu tiên giọng tự nhiên (Google / Microsoft HoaiMy / NamMinh / Linh)
+    return (
+      viVoices.find((v) => /google|hoaimy|namminh|linh|an\b/i.test(v.name || '')) ||
+      viVoices[0]
+    );
   }
 
   initVoice() {
     if (!this.synth) return;
-    
-    // Tải danh sách giọng nói
+
     const loadVoices = () => {
       const voices = this.synth.getVoices();
-      // Ưu tiên giọng tiếng Việt
-      this.cachedVoice = voices.find(v => v.lang === 'vi-VN' || v.lang.startsWith('vi')) || null;
+      this.cachedVoice = this.findVietnameseVoice(voices);
     };
 
     loadVoices();
@@ -89,55 +116,167 @@ class StudyZenVoice {
   }
 
   stop() {
-    if (this.synth && this.synth.speaking) {
+    this.playbackId += 1;
+    if (this.synth && (this.synth.speaking || this.synth.pending)) {
       this.synth.cancel();
+    }
+    if (this.currentAudio) {
+      try {
+        this.currentAudio.pause();
+        this.currentAudio.onended = null;
+        this.currentAudio.onerror = null;
+        this.currentAudio.src = '';
+      } catch {
+        // Bỏ qua lỗi khi dọn dẹp audio
+      }
+      this.currentAudio = null;
     }
   }
 
+  /**
+   * Chia văn bản tiếng Việt thành các đoạn ngắn <= 180 ký tự theo dấu câu
+   */
+  splitTextChunks(text, maxLen = 180) {
+    const sentences = text.split(/(?<=[.!?…,:;])\s+/);
+    const chunks = [];
+    let current = '';
+
+    for (const part of sentences) {
+      if (!part) continue;
+      if ((current + ' ' + part).trim().length <= maxLen) {
+        current = (current + ' ' + part).trim();
+      } else {
+        if (current) chunks.push(current);
+        if (part.length <= maxLen) {
+          current = part;
+        } else {
+          // Cắt theo từ nếu một câu quá dài
+          const words = part.split(/\s+/);
+          let buf = '';
+          for (const w of words) {
+            if ((buf + ' ' + w).trim().length <= maxLen) {
+              buf = (buf + ' ' + w).trim();
+            } else {
+              if (buf) chunks.push(buf);
+              buf = w;
+            }
+          }
+          current = buf;
+        }
+      }
+    }
+    if (current) chunks.push(current);
+    return chunks;
+  }
+
+  /**
+   * Phát giọng tiếng Việt dự phòng qua Audio khi trình duyệt không có voice vi-VN
+   */
+  playVietnameseAudioFallback(cleanText, playbackId, onEnd) {
+    if (typeof Audio === 'undefined') {
+      if (onEnd) onEnd();
+      return;
+    }
+
+    const chunks = this.splitTextChunks(cleanText, 180);
+    if (chunks.length === 0) {
+      if (onEnd) onEnd();
+      return;
+    }
+
+    const playNext = (index) => {
+      if (this.isMuted || playbackId !== this.playbackId) {
+        if (onEnd) onEnd();
+        return;
+      }
+      if (index >= chunks.length) {
+        this.currentAudio = null;
+        if (onEnd) onEnd();
+        return;
+      }
+
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=${encodeURIComponent(chunks[index])}`;
+      const audio = new Audio();
+      audio.referrerPolicy = 'no-referrer';
+      audio.src = url;
+      this.currentAudio = audio;
+
+      audio.onended = () => {
+        playNext(index + 1);
+      };
+
+      audio.onerror = () => {
+        this.currentAudio = null;
+        if (onEnd) onEnd();
+      };
+
+      const playPromise = audio.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {
+          this.currentAudio = null;
+          if (onEnd) onEnd();
+        });
+      }
+    };
+
+    playNext(0);
+  }
+
   speak(text, onEnd) {
-    if (this.isMuted || !this.synth || !text) {
+    if (this.isMuted || !text) {
       if (onEnd) onEnd();
       return;
     }
 
     try {
       this.stop();
+      const currentPlaybackId = this.playbackId;
 
       // Đảm bảo không xưng "Em" mà xưng "Bạn" khi đọc
       let cleanText = convertEmToBan(text);
 
-      // Làm sạch text (bỏ markdown/dấu ngoặc kép thừa để đọc trôi chảy)
+      // Làm sạch text (bỏ markdown/dấu ngoặc kép thừa để đọc trôi chảy bằng tiếng Việt)
       cleanText = cleanText
         .replace(/[*_#`~[\]]/g, '')
         .replace(/["'“”‘’]/g, '')
-        .replace(/\bStudyZen\b/gi, 'S-tơ-đi Zen')
+        .replace(/\bStudyZen\b/gi, 'Sờ tơ đi Zen')
         .replace(/\b1\b/g, 'một')
         .replace(/\b2\b/g, 'hai')
         .replace(/\b3\b/g, 'ba')
         .replace(/\s+/g, ' ')
         .trim();
 
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.lang = 'vi-VN';
-      // Tinh chỉnh tông cao và tốc độ để giọng trẻ trung, hào hứng, thân thiện
-      utterance.pitch = 1.15; 
-      utterance.rate = 1.05; 
-      utterance.volume = 1.0;
+      if (!cleanText) {
+        if (onEnd) onEnd();
+        return;
+      }
 
-      if (this.cachedVoice) {
-        utterance.voice = this.cachedVoice;
+      // Chỉ dùng Web Speech API nếu thiết bị THỰC SỰ có giọng tiếng Việt (vi-VN)
+      // Tuyệt đối không để trình duyệt tự rơi về giọng tiếng Anh mặc định.
+      let viVoice = this.cachedVoice;
+      if (!viVoice && this.synth) {
+        viVoice = this.findVietnameseVoice(this.synth.getVoices());
+        if (viVoice) this.cachedVoice = viVoice;
+      }
+
+      if (this.synth && viVoice) {
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = viVoice.lang || 'vi-VN';
+        utterance.voice = viVoice;
+        utterance.pitch = 1.1;
+        utterance.rate = 1.02;
+        utterance.volume = 1.0;
+
+        if (onEnd) {
+          utterance.onend = onEnd;
+          utterance.onerror = onEnd;
+        }
+
+        this.synth.speak(utterance);
       } else {
-        const voices = this.synth.getVoices();
-        const viVoice = voices.find(v => v.lang === 'vi-VN' || v.lang.startsWith('vi'));
-        if (viVoice) utterance.voice = viVoice;
+        // Thiết bị không có giọng tiếng Việt cục bộ -> dùng Audio tiếng Việt
+        this.playVietnameseAudioFallback(cleanText, currentPlaybackId, onEnd);
       }
-
-      if (onEnd) {
-        utterance.onend = onEnd;
-        utterance.onerror = onEnd;
-      }
-
-      this.synth.speak(utterance);
     } catch (err) {
       console.warn('Lỗi phát giọng nói StudyZen:', err);
       if (onEnd) onEnd();
