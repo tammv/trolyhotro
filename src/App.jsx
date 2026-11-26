@@ -107,7 +107,7 @@ export default function App() {
       <footer className="mt-12 sm:mt-16 border-t-2 border-slate-200 dark:border-[#37464f] bg-white dark:bg-[#1c2b33] py-8 text-center text-xs text-slate-500 dark:text-[#8fa5b1] pb-24 sm:pb-8 transition-colors">
         <div className="max-w-6xl mx-auto px-4 space-y-2">
           <p className="font-bold text-slate-700 dark:text-[#e6eef2]">
-            Trợ Lý Gỡ Rối Học Tập • Hệ thống hỗ trợ tâm lý & giải quyết áp lực học đường
+            Trợ Lý Gỡ Rối Học Tập - Công cụ hỗ trợ học sinh THPT nhận diện, ứng phó với khó khăn học tập và quản lý căng thẳng nhằm nâng cao năng lực tự giải quyết vấn đề.
           </p>
           <p className="text-slate-400 dark:text-[#8fa5b1] font-medium">
             Dữ liệu tổng hợp từ các chuyên đề thực tế dành cho học sinh. Luôn có giải pháp cho mọi khó khăn!
