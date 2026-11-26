@@ -43,6 +43,17 @@ export function convertEmToBan(text) {
 }
 
 /**
+ * Chuyển đổi chuỗi in hoa thành chữ thường có viết hoa chữ cái đầu (Sentence case)
+ * Giúp tiêu đề tình huống tự nhiên, nhẹ nhàng, không gây cảm giác gắt gỏng do in hoa toàn bộ.
+ */
+export function formatSentenceCase(str) {
+  if (!str) return '';
+  const trimmed = str.trim();
+  const lower = trimmed.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
+/**
  * StudyZen Text-to-Speech (Web Speech API)
  * Hoàn toàn miễn phí (0đ), chạy trực tiếp trên trình duyệt, không cần API key.
  */

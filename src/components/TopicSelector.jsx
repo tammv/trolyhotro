@@ -38,7 +38,7 @@ import {
 import { soundFx } from '../lib/sound';
 import QuickSupport from './QuickSupport';
 import StudyZenMascot from './StudyZenMascot';
-import { mascotVoice } from '../lib/ttsVoice';
+import { mascotVoice, formatSentenceCase } from '../lib/ttsVoice';
 
 // Bản đồ icon và màu sắc cho từng tình huống cụ thể
 const PROBLEM_ICONS = {
@@ -143,6 +143,11 @@ export default function TopicSelector({
 
       return {
         ...prob,
+        Title: formatSentenceCase(prob.Title),
+        Branches: (prob.Branches || []).map(b => ({
+          ...b,
+          BranchTitle: formatSentenceCase(b.BranchTitle || b.OptionText)
+        })),
         category,
         IconComponent: iconMeta.icon,
         colorClass: iconMeta.color,
@@ -307,7 +312,7 @@ export default function TopicSelector({
           <div className="mt-8 sm:mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 text-left max-w-4xl mx-auto pt-4 border-t-2 border-slate-200/70 dark:border-[#37464f] px-2">
             <div className="p-4 rounded-2xl bg-white dark:bg-[#1c2b33] border-2 border-slate-200 dark:border-[#37464f] shadow-[0_3px_0_#e2e8f0] dark:shadow-none">
               <div className="flex items-center gap-2 text-blue-600 dark:text-[#1cb0f6] font-black text-sm mb-1">
-                <CheckCircle2 className="w-4 h-4" /> 21 Tình huống thực tế
+                <CheckCircle2 className="w-4 h-4" /> Tình huống thực tế
               </div>
               <p className="text-xs text-slate-500 dark:text-[#8fa5b1] font-medium leading-relaxed">
                 Được tổng hợp từ các bài tập, kỳ thi và tâm lý thực tế của học sinh.

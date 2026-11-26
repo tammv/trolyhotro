@@ -21,7 +21,7 @@ import { getRandomQuote } from '../lib/motivationalQuotes';
 import { saveStudentSession, saveStudentFeedback } from '../lib/supabase';
 import StudyZenMascot from './StudyZenMascot';
 import MascotCheerModal from './MascotCheerModal';
-import { convertEmToBan, mascotVoice } from '../lib/ttsVoice';
+import { convertEmToBan, mascotVoice, formatSentenceCase } from '../lib/ttsVoice';
 
 export default function DecisionTree({ 
   problem, 
@@ -280,7 +280,7 @@ export default function DecisionTree({
               <span>Tình huống bạn chọn</span>
             </div>
             <h2 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-[#e6eef2] tracking-tight leading-snug">
-              {problem.Title}
+              {formatSentenceCase(problem.Title)}
             </h2>
             {!focusMode && problem.Intro && (
               <p className="mt-3 text-xs sm:text-sm text-slate-600 dark:text-[#8fa5b1] leading-relaxed whitespace-pre-line border-l-4 border-blue-500 pl-3.5 py-1 bg-slate-50 dark:bg-[#243640] rounded-r-xl font-medium">
@@ -329,7 +329,7 @@ export default function DecisionTree({
               Đang xem xét nhánh
             </span>
             <h2 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-[#e6eef2]">
-              {currentBranch.BranchTitle || currentBranch.OptionText}
+              {formatSentenceCase(currentBranch.BranchTitle || currentBranch.OptionText)}
             </h2>
             {!focusMode && currentBranch.Intro && (
               <p className="mt-2.5 text-xs sm:text-sm text-slate-600 dark:text-[#8fa5b1] leading-relaxed whitespace-pre-line border-l-4 border-indigo-500 pl-3.5 py-1 bg-slate-50 dark:bg-[#243640] rounded-r-xl font-medium">
