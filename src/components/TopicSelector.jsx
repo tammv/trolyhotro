@@ -63,6 +63,9 @@ const PROBLEM_ICONS = {
   '1.19': { icon: Frown, color: 'text-purple-600 bg-purple-100 border-purple-300 shadow-[0_3px_0_#d8b4fe]', tag: 'Lo lắng chờ điểm' },
   '1.20': { icon: Brain, color: 'text-cyan-600 bg-cyan-100 border-cyan-300 shadow-[0_3px_0_#67e8f9]', tag: 'Tiếc nuối câu sai' },
   '1.21': { icon: Flame, color: 'text-red-600 bg-red-100 border-red-300 shadow-[0_3px_0_#fca5a5]', tag: 'Nhiều môn thi 1 ngày' },
+  '1.22': { icon: Heart, color: 'text-rose-600 bg-rose-100 border-rose-300 shadow-[0_3px_0_#fda4af]', tag: 'Cần người lắng nghe' },
+  '1.23': { icon: HelpCircle, color: 'text-indigo-600 bg-indigo-100 border-indigo-300 shadow-[0_3px_0_#a5b4fc]', tag: 'Chưa theo kịp bài' },
+  '1.24': { icon: ShieldCheck, color: 'text-amber-600 bg-amber-100 border-amber-300 shadow-[0_3px_0_#fcd34d]', tag: 'Áp lực gia đình' },
 };
 
 const ITEMS_PER_PAGE = 6;
@@ -123,21 +126,21 @@ export default function TopicSelector({
   // Phân loại danh mục
   const categorizedProblems = useMemo(() => {
     return problems.map(prob => {
-      const codeNum = parseFloat(prob.Code);
-      const iconMeta = PROBLEM_ICONS[prob.Code] || { 
+      const code = String(prob.Code);
+      const iconMeta = PROBLEM_ICONS[code] || { 
         icon: HelpCircle, 
         color: 'text-blue-600 bg-blue-100 border-blue-300 shadow-[0_3px_0_#93c5fd]', 
         tag: 'Khó khăn học tập' 
       };
 
       let category = 'other';
-      if ([1.1, 1.2, 1.5, 1.6, 1.7, 1.8].includes(codeNum)) {
+      if (['1.1', '1.2', '1.5', '1.6', '1.7', '1.8', '1.23'].includes(code)) {
         category = 'homework';
-      } else if ([1.3, 1.4, 1.9, 1.18].includes(codeNum)) {
+      } else if (['1.3', '1.4', '1.9', '1.18'].includes(code)) {
         category = 'submission';
-      } else if ([1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.21].includes(codeNum)) {
+      } else if (['1.10', '1.11', '1.12', '1.13', '1.14', '1.15', '1.21'].includes(code)) {
         category = 'exam';
-      } else if ([1.16, 1.17, 1.19, 1.20].includes(codeNum)) {
+      } else if (['1.16', '1.17', '1.19', '1.20', '1.22', '1.24'].includes(code)) {
         category = 'mindset';
       }
 
@@ -155,6 +158,15 @@ export default function TopicSelector({
       };
     });
   }, [problems]);
+
+  // Đếm số lượng tình huống theo từng danh mục
+  const categoryCounts = useMemo(() => {
+    const counts = { all: categorizedProblems.length, homework: 0, submission: 0, exam: 0, mindset: 0 };
+    categorizedProblems.forEach(p => {
+      if (counts[p.category] !== undefined) counts[p.category]++;
+    });
+    return counts;
+  }, [categorizedProblems]);
 
   const filteredProblems = useMemo(() => {
     return categorizedProblems.filter(p => {
@@ -391,11 +403,11 @@ export default function TopicSelector({
             {/* Phân loại Pills phong cách 3D Duolingo */}
             <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-5">
               {[
-                { id: 'all', label: 'Tất cả (21)' },
-                { id: 'homework', label: 'Bài tập (6)' },
-                { id: 'submission', label: 'Nộp bài (4)' },
-                { id: 'exam', label: 'Kiểm tra (7)' },
-                { id: 'mindset', label: 'Tâm lý (4)' },
+                { id: 'all', label: `Tất cả (${categoryCounts.all})` },
+                { id: 'homework', label: `Bài tập (${categoryCounts.homework})` },
+                { id: 'submission', label: `Nộp bài (${categoryCounts.submission})` },
+                { id: 'exam', label: `Kiểm tra (${categoryCounts.exam})` },
+                { id: 'mindset', label: `Tâm lý & Gia đình (${categoryCounts.mindset})` },
               ].map((cat) => (
                 <button
                   key={cat.id}
