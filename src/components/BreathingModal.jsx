@@ -1,19 +1,41 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { X, Sparkles, Heart, Play, RotateCcw } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { X, Sparkles, Heart, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { soundFx } from '../lib/sound';
 import confetti from 'canvas-confetti';
+
+const MEDITATION_VIDEO_ID = 'r3gRcVd1swk';
+const MEDITATION_EMBED_URL = `https://www.youtube.com/embed/${MEDITATION_VIDEO_ID}?autoplay=1&loop=1&playlist=${MEDITATION_VIDEO_ID}&enablejsapi=1&rel=0`;
 
 export default function BreathingModal({ isOpen, onClose }) {
   const [isActive, setIsActive] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(60);
   const [phase, setPhase] = useState('ready'); // 'ready' | 'inhale' | 'hold' | 'exhale' | 'done'
+  const [isMusicOn, setIsMusicOn] = useState(true);
   const timerRef = useRef(null);
+  const iframeRef = useRef(null);
+
+  const sendPlayerCommand = useCallback((func) => {
+    if (iframeRef.current?.contentWindow) {
+      iframeRef.current.contentWindow.postMessage(
+        JSON.stringify({ event: 'command', func, args: '' }),
+        '*'
+      );
+    }
+  }, []);
+
+  const handleReset = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setIsActive(false);
+    setSecondsLeft(60);
+    setPhase('ready');
+  }, []);
 
   useEffect(() => {
     if (!isOpen) {
       handleReset();
+      setIsMusicOn(true);
     }
-  }, [isOpen]);
+  }, [isOpen, handleReset]);
 
   useEffect(() => {
     if (isActive && secondsLeft > 0) {
@@ -52,34 +74,70 @@ export default function BreathingModal({ isOpen, onClose }) {
     setSecondsLeft(60);
     setIsActive(true);
     setPhase('inhale');
+    if (isMusicOn) {
+      sendPlayerCommand('unMute');
+      sendPlayerCommand('playVideo');
+    }
   };
 
-  const handleReset = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setIsActive(false);
-    setSecondsLeft(60);
-    setPhase('ready');
+  const handleToggleMusic = () => {
+    if (isMusicOn) {
+      sendPlayerCommand('pauseVideo');
+      setIsMusicOn(false);
+    } else {
+      setIsMusicOn(true);
+      sendPlayerCommand('unMute');
+      sendPlayerCommand('playVideo');
+    }
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-[#1c2b33] w-full max-w-md rounded-3xl shadow-2xl border-2 border-slate-200 dark:border-[#37464f] p-6 sm:p-8 text-center space-y-6 my-auto transition-colors">
+      <div className="bg-white dark:bg-[#1c2b33] w-full max-w-md rounded-3xl shadow-2xl border-2 border-slate-200 dark:border-[#37464f] p-6 sm:p-8 text-center space-y-6 my-auto transition-colors relative overflow-hidden">
+
+        {/* Video nhạc thiền chạy nền tự động */}
+        {isMusicOn && (
+          <iframe
+            ref={iframeRef}
+            src={MEDITATION_EMBED_URL}
+            title="Nhạc thiền thư giãn nền"
+            allow="autoplay; encrypted-media"
+            aria-hidden="true"
+            tabIndex={-1}
+            className="w-1 h-1 opacity-0 pointer-events-none absolute -z-10"
+          />
+        )}
         
         {/* Header Modal */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-teal-50 dark:bg-[#12384a] text-teal-700 dark:text-[#1cb0f6] text-xs font-black border border-teal-200 dark:border-[#1c7aa6]">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Hạ nhiệt 60 giây</span>
           </span>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#243640] transition-colors cursor-pointer"
-            aria-label="Đóng"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={handleToggleMusic}
+              title={isMusicOn ? 'Tắt nhạc thiền nền' : 'Bật nhạc thiền nền'}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                isMusicOn
+                  ? 'bg-teal-50 dark:bg-[#12384a] text-teal-700 dark:text-[#2dd4bf] border-teal-200 dark:border-[#0d9488]'
+                  : 'bg-slate-100 dark:bg-[#243640] text-slate-500 dark:text-[#8fa5b1] border-slate-200 dark:border-[#37464f]'
+              }`}
+            >
+              {isMusicOn ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+              <span>{isMusicOn ? 'Nhạc nền' : 'Đã tắt'}</span>
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#243640] transition-colors cursor-pointer"
+              aria-label="Đóng"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Tiêu đề */}
@@ -97,11 +155,11 @@ export default function BreathingModal({ isOpen, onClose }) {
           <div
             className={`w-36 h-36 rounded-full border-4 border-white dark:border-[#37464f] flex flex-col items-center justify-center transition-all duration-1000 select-none ${
               phase === 'inhale'
-                ? 'scale-125 bg-gradient-to-tr from-teal-200 via-blue-200 to-indigo-200 dark:from-teal-900/60 dark:to-blue-900/60 shadow-[0_0_35px_rgba(59,130,246,0.35)]'
+                ? 'scale-125 bg-gradient-to-tr from-teal-200 via-blue-200 to-indigo-200 dark:from-teal-900/60 dark:via-teal-800/60 dark:to-blue-900/60 shadow-[0_0_35px_rgba(59,130,246,0.35)]'
                 : phase === 'hold'
-                ? 'scale-125 bg-gradient-to-tr from-purple-200 via-indigo-200 to-blue-200 dark:from-purple-900/60 dark:to-indigo-900/60 shadow-[0_0_45px_rgba(139,92,246,0.4)]'
+                ? 'scale-125 bg-gradient-to-tr from-purple-200 via-indigo-200 to-blue-200 dark:from-purple-900/60 dark:via-indigo-900/60 dark:to-blue-900/60 shadow-[0_0_45px_rgba(139,92,246,0.4)]'
                 : phase === 'exhale'
-                ? 'scale-95 bg-gradient-to-tr from-emerald-200 via-teal-200 to-blue-100 dark:from-emerald-900/60 dark:to-teal-900/60 shadow-[0_0_20px_rgba(22,163,74,0.25)]'
+                ? 'scale-95 bg-gradient-to-tr from-emerald-200 via-teal-200 to-blue-100 dark:from-emerald-900/60 dark:via-teal-900/60 dark:to-blue-900/60 shadow-[0_0_20px_rgba(22,163,74,0.25)]'
                 : phase === 'done'
                 ? 'scale-110 bg-emerald-100 dark:bg-emerald-950/60 shadow-[0_0_30px_rgba(16,185,129,0.3)]'
                 : 'scale-100 bg-slate-100 dark:bg-[#243640] shadow-sm'
