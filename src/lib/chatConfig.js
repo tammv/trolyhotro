@@ -1,13 +1,12 @@
 /**
- * Cấu hình kênh Chat trực tiếp hỗ trợ học sinh (Phương án 1: Tawk.to + Zalo)
+ * Cấu hình kênh Chat trực tiếp hỗ trợ học sinh (Crisp Chat + Zalo)
  * Học sinh không cần đăng nhập - tự động gán mã phiên ẩn danh.
  */
 
 export const CHAT_CONFIG = {
-  // Mã Property ID và Widget ID từ tài khoản Tawk.to của cô giáo
-  // Sau khi cô tạo tài khoản trên https://www.tawk.to, dán Property ID vào đây hoặc biến môi trường VITE_TAWK_PROPERTY_ID
-  tawkPropertyId: import.meta.env.VITE_TAWK_PROPERTY_ID || '',
-  tawkWidgetId: import.meta.env.VITE_TAWK_WIDGET_ID || 'default',
+  // Mã Website ID từ tài khoản Crisp của cô giáo (https://app.crisp.chat)
+  // Sau khi tạo tài khoản Crisp, dán Website ID vào đây hoặc biến môi trường VITE_CRISP_WEBSITE_ID
+  crispWebsiteId: import.meta.env.VITE_CRISP_WEBSITE_ID || '',
 
   // Số điện thoại Zalo kết nối trực tiếp tới điện thoại của cô giáo
   teacherZaloPhone: '0935320230',

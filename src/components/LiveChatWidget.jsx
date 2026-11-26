@@ -1,66 +1,74 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, X, ExternalLink, ShieldCheck, Sparkles, PhoneCall, Send } from 'lucide-react';
+import { MessageCircle, X, ExternalLink, ShieldCheck, PhoneCall, Send } from 'lucide-react';
 import { CHAT_CONFIG, getAnonymousStudentId } from '../lib/chatConfig';
 import { soundFx } from '../lib/sound';
 import StudyZenMascot from './StudyZenMascot';
 
 export default function LiveChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [tawkReady, setTawkReady] = useState(false);
+  const [crispReady, setCrispReady] = useState(false);
+  const [hasUnread, setHasUnread] = useState(false);
   const [showSetupNotice, setShowSetupNotice] = useState(false);
   const anonId = getAnonymousStudentId();
-  const isTawkConfigured = Boolean(CHAT_CONFIG.tawkPropertyId && CHAT_CONFIG.tawkPropertyId.trim() !== '');
+  const isCrispConfigured = Boolean(CHAT_CONFIG.crispWebsiteId && CHAT_CONFIG.crispWebsiteId.trim() !== '');
 
-  // Nhúng script Tawk.to nếu đã cấu hình Property ID
+  // Nhúng script Crisp Chat nếu đã cấu hình Website ID
   useEffect(() => {
-    if (!isTawkConfigured) return;
+    if (!isCrispConfigured) return;
 
-    window.Tawk_API = window.Tawk_API || {};
-    window.Tawk_LoadStart = new Date();
+    window.$crisp = [];
+    window.CRISP_WEBSITE_ID = CHAT_CONFIG.crispWebsiteId;
 
-    window.Tawk_API.onLoad = function () {
-      setTawkReady(true);
-      // Ẩn bong bóng mặc định của Tawk.to để tránh đè thanh điều hướng điện thoại
-      if (window.Tawk_API.hideWidget) {
-        window.Tawk_API.hideWidget();
-      }
-      // Gán mã phiên ẩn danh cho học sinh (không cần đăng nhập)
-      if (window.Tawk_API.setAttributes) {
-        window.Tawk_API.setAttributes(
-          {
-            name: `Học sinh (${anonId})`,
-          },
-          function () {}
-        );
-      }
-    };
+    window.$crisp.push(['safe', true]);
+    // Gán mã phiên ẩn danh cho học sinh (không cần đăng nhập)
+    window.$crisp.push(['set', 'user:nickname', [`Học sinh (${anonId})`]]);
+    // Ẩn bong bóng mặc định của Crisp để dùng nút 3D StudyZen (tránh đè thanh điều hướng mobile)
+    window.$crisp.push(['do', 'chat:hide']);
 
-    window.Tawk_API.onChatMinimized = function () {
-      if (window.Tawk_API.hideWidget) {
-        window.Tawk_API.hideWidget();
-      }
-    };
+    window.$crisp.push([
+      'on',
+      'session:loaded',
+      function () {
+        setCrispReady(true);
+      },
+    ]);
 
-    const s1 = document.createElement('script');
-    s1.async = true;
-    s1.src = `https://embed.tawk.to/${CHAT_CONFIG.tawkPropertyId}/${CHAT_CONFIG.tawkWidgetId || 'default'}`;
-    s1.charset = 'UTF-8';
-    s1.setAttribute('crossorigin', '*');
-    document.body.appendChild(s1);
+    window.$crisp.push([
+      'on',
+      'chat:closed',
+      function () {
+        window.$crisp.push(['do', 'chat:hide']);
+      },
+    ]);
+
+    window.$crisp.push([
+      'on',
+      'message:received',
+      function () {
+        setHasUnread(true);
+        window.$crisp.push(['do', 'chat:show']);
+      },
+    ]);
+
+    const s = document.createElement('script');
+    s.src = 'https://client.crisp.chat/l.js';
+    s.async = true;
+    document.head.appendChild(s);
 
     return () => {
       try {
-        document.body.removeChild(s1);
+        document.head.removeChild(s);
       } catch {}
     };
-  }, [isTawkConfigured, anonId]);
+  }, [isCrispConfigured, anonId]);
 
   const handleOpenWebChat = () => {
     soundFx.playChime();
-    if (isTawkConfigured && window.Tawk_API) {
+    if (isCrispConfigured && window.$crisp) {
       setIsOpen(false);
-      if (window.Tawk_API.showWidget) window.Tawk_API.showWidget();
-      if (window.Tawk_API.maximize) window.Tawk_API.maximize();
+      setHasUnread(false);
+      window.$crisp.push(['do', 'chat:show']);
+      window.$crisp.push(['do', 'chat:open']);
     } else {
       setShowSetupNotice(true);
     }
@@ -106,7 +114,7 @@ export default function LiveChatWidget() {
               Nếu bạn chưa biết gọi tên khó khăn của mình hoặc cần người lắng nghe trực tiếp, cứ nhắn cho cô nhé!
             </p>
 
-            {/* Nút 1: Chat trực tiếp trên web (Tawk.to) */}
+            {/* Nút 1: Chat trực tiếp trên web (Crisp) */}
             <button
               onClick={handleOpenWebChat}
               className="w-full p-3.5 rounded-2xl bg-blue-600 hover:brightness-105 active:translate-y-0.5 text-white shadow-[0_4px_0_#1d4ed8] transition-all flex items-center justify-between gap-2 cursor-pointer text-left btn-3d"
@@ -118,17 +126,17 @@ export default function LiveChatWidget() {
                 <div>
                   <div className="text-xs sm:text-sm font-black">Chat trực tiếp trên web</div>
                   <div className="text-[11px] text-blue-100 font-medium">
-                    {isTawkConfigured ? (tawkReady ? 'Báo thẳng tới điện thoại cô' : 'Đang kết nối...') : 'Không cần đăng nhập · Ẩn danh'}
+                    {isCrispConfigured ? (crispReady ? 'Báo thẳng tới điện thoại cô' : 'Đang kết nối...') : 'Không cần đăng nhập · Ẩn danh'}
                   </div>
                 </div>
               </div>
               <Send className="w-4 h-4 shrink-0" />
             </button>
 
-            {/* Thông báo nếu chưa dán mã Tawk.to */}
-            {showSetupNotice && !isTawkConfigured && (
+            {/* Thông báo nếu chưa dán mã Crisp */}
+            {showSetupNotice && !isCrispConfigured && (
               <div className="p-3 rounded-2xl bg-amber-50 dark:bg-[#322714] border border-amber-200 dark:border-[#634b1a] text-[11px] text-amber-900 dark:text-[#fef08a] font-medium leading-relaxed animate-in fade-in duration-200">
-                <strong>Lưu ý kết nối:</strong> Kênh chat web đang chờ gắn mã <strong>Tawk.to Property ID</strong> của cô giáo. Trong lúc chờ, bạn hãy bấm nút <strong>Nhắn qua Zalo</strong> ngay bên dưới để gặp cô nhé!
+                <strong>Lưu ý kết nối:</strong> Kênh chat web đang chờ gắn mã <strong>Crisp Website ID</strong> của cô giáo. Trong lúc chờ, bạn hãy bấm nút <strong>Nhắn qua Zalo</strong> ngay bên dưới để gặp cô nhé!
               </div>
             )}
 
@@ -170,13 +178,14 @@ export default function LiveChatWidget() {
         onClick={() => {
           soundFx.playPop();
           setIsOpen(!isOpen);
+          setHasUnread(false);
         }}
         className="group flex items-center gap-2 px-4 py-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white font-black text-xs sm:text-sm shadow-[0_4px_0_#1e3a8a,0_8px_20px_rgba(37,99,235,0.35)] border-2 border-white/20 transition-all active:translate-y-0.5 cursor-pointer btn-3d"
         title="Nhắn tin trực tiếp với thầy cô"
       >
         <div className="relative">
           <MessageCircle className="w-5 h-5" />
-          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-blue-600 animate-pulse"></span>
+          <span className={`absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-blue-600 ${hasUnread ? 'bg-red-500 animate-ping' : 'bg-emerald-400 animate-pulse'}`}></span>
         </div>
         <span>Nhắn với cô</span>
       </button>
