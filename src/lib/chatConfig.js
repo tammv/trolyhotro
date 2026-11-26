@@ -6,7 +6,7 @@
 export const CHAT_CONFIG = {
   // Mã Website ID từ tài khoản Crisp của cô giáo (https://app.crisp.chat)
   // Sau khi tạo tài khoản Crisp, dán Website ID vào đây hoặc biến môi trường VITE_CRISP_WEBSITE_ID
-  crispWebsiteId: import.meta.env.VITE_CRISP_WEBSITE_ID || '',
+  crispWebsiteId: import.meta.env.VITE_CRISP_WEBSITE_ID || 'a8e006f6-f74b-4cc4-92c2-a5f7af523ddf',
 
   // Số điện thoại Zalo kết nối trực tiếp tới điện thoại của cô giáo
   teacherZaloPhone: '0935320230',
