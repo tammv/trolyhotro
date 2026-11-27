@@ -33,12 +33,14 @@ import {
   ShieldCheck,
   CheckCircle2,
   Wind,
-  Volume2
+  Volume2,
+  X
 } from 'lucide-react';
 import { soundFx } from '../lib/sound';
 import QuickSupport from './QuickSupport';
 import StudyZenMascot from './StudyZenMascot';
 import { mascotVoice, formatSentenceCase } from '../lib/ttsVoice';
+import { buildSearchMeta, filterAndRankProblems } from '../lib/smartSearch';
 
 // Bản đồ icon và màu sắc cho từng tình huống cụ thể
 const PROBLEM_ICONS = {
@@ -152,7 +154,7 @@ export default function TopicSelector({
         category = 'mindset';
       }
 
-      return {
+      const enriched = {
         ...prob,
         Title: formatSentenceCase(prob.Title),
         Branches: (prob.Branches || []).map(b => ({
@@ -164,6 +166,8 @@ export default function TopicSelector({
         colorClass: iconMeta.color,
         tag: iconMeta.tag
       };
+      enriched._searchMeta = buildSearchMeta(enriched);
+      return enriched;
     });
   }, [problems]);
 
@@ -177,12 +181,7 @@ export default function TopicSelector({
   }, [categorizedProblems]);
 
   const filteredProblems = useMemo(() => {
-    return categorizedProblems.filter(p => {
-      const matchCat = activeCategory === 'all' || p.category === activeCategory;
-      const matchSearch = p.Title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          p.tag.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchCat && matchSearch;
-    });
+    return filterAndRankProblems(categorizedProblems, searchQuery, activeCategory);
   }, [categorizedProblems, activeCategory, searchQuery]);
 
   // Reset về trang 1 khi tìm kiếm hoặc đổi danh mục
@@ -394,19 +393,34 @@ export default function TopicSelector({
               <span>StudyZen ở đây để đồng hành cùng bạn · Cứ thong thả chọn nhé! ✨</span>
             </div>
 
-            {/* Ô tìm kiếm */}
+            {/* Ô tìm kiếm thông minh theo văn phong tự nhiên */}
             <div className="mt-5 relative max-w-xl mx-auto">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
                 <Search className="w-5 h-5" />
               </div>
               <input
                 type="text"
-                placeholder="Tìm nhanh (quá nhiều bài, hạn nộp gấp, sợ thi...)"
+                placeholder="Nhập tự nhiên (vd: sợ điểm thấp, ngại hỏi cô, hay trì hoãn, mất ngủ...)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 sm:py-3.5 rounded-2xl bg-white dark:bg-[#1c2b33] border-2 border-slate-200 dark:border-[#37464f] shadow-[0_3px_0_#e2e8f0] dark:shadow-none text-slate-900 dark:text-[#e6eef2] focus:outline-hidden focus:border-blue-500 text-sm font-semibold transition-all"
+                className="w-full pl-11 pr-10 py-3 sm:py-3.5 rounded-2xl bg-white dark:bg-[#1c2b33] border-2 border-slate-200 dark:border-[#37464f] shadow-[0_3px_0_#e2e8f0] dark:shadow-none text-slate-900 dark:text-[#e6eef2] focus:outline-hidden focus:border-blue-500 text-sm font-semibold transition-all"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Xóa tìm kiếm"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
+            {searchQuery.trim() && (
+              <p className="mt-2 text-xs font-bold text-slate-500 dark:text-[#8fa5b1]">
+                Tìm thấy <span className="text-blue-600 dark:text-[#1cb0f6]">{filteredProblems.length}</span> tình huống phù hợp
+              </p>
+            )}
 
             {/* Phân loại Pills phong cách 3D Duolingo */}
             <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-5">
@@ -513,6 +527,27 @@ export default function TopicSelector({
               );
             })}
           </div>
+
+          {filteredProblems.length === 0 && (
+            <div className="mx-3 sm:mx-4 mt-4 p-8 rounded-3xl bg-white dark:bg-[#1c2b33] border-2 border-slate-200 dark:border-[#37464f] text-center space-y-3">
+              <p className="text-base sm:text-lg font-black text-slate-800 dark:text-[#e6eef2]">
+                Chưa tìm thấy tình huống khớp với “{searchQuery}”
+              </p>
+              <p className="text-sm text-slate-500 dark:text-[#8fa5b1] font-medium">
+                Bạn thử diễn đạt ngắn hơn (vd: “mất ngủ”, “sợ thi”, “quá nhiều bài”, “nản lòng”) hoặc chuyển về danh mục Tất cả nhé.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('');
+                  setActiveCategory('all');
+                }}
+                className="px-5 py-2.5 rounded-2xl bg-blue-600 text-white text-xs sm:text-sm font-black shadow-[0_3px_0_#1d4ed8] cursor-pointer btn-3d"
+              >
+                Xem tất cả tình huống
+              </button>
+            </div>
+          )}
 
           {/* BỘ ĐIỀU KHIỂN PHÂN TRANG (3D CONTROLS) */}
           {totalPages > 1 && (
