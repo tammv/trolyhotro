@@ -262,8 +262,8 @@ export default function DecisionTree({
             <Sparkles className="w-4 h-4 text-amber-600 dark:text-[#f7cd46]" />
           </div>
           <div>
-            <div className="text-[11px] font-black uppercase tracking-wider text-amber-800 dark:text-[#f7cd46]">Lời nhắn nhủ gửi bạn ✨</div>
-            <p className="text-xs sm:text-sm text-amber-950 dark:text-[#fef08a] font-bold mt-0.5 leading-relaxed">
+            <div className="text-xs font-black uppercase tracking-wider text-amber-800 dark:text-[#f7cd46]">Lời nhắn nhủ gửi bạn ✨</div>
+            <p className="text-sm sm:text-base text-amber-950 dark:text-[#fef08a] font-bold mt-0.5 leading-relaxed">
               "{encouragement}"
             </p>
           </div>
@@ -283,7 +283,7 @@ export default function DecisionTree({
               {formatSentenceCase(problem.Title)}
             </h2>
             {!focusMode && problem.Intro && (
-              <p className="mt-3 text-xs sm:text-sm text-slate-600 dark:text-[#8fa5b1] leading-relaxed whitespace-pre-line border-l-4 border-blue-500 pl-3.5 py-1 bg-slate-50 dark:bg-[#243640] rounded-r-xl font-medium">
+              <p className="mt-3 text-sm sm:text-base text-slate-700 dark:text-[#d1e1ea] leading-relaxed whitespace-pre-line border-l-4 border-blue-500 pl-4 py-2 bg-slate-50 dark:bg-[#243640] rounded-r-xl font-medium">
                 {problem.Intro}
               </p>
             )}
@@ -294,7 +294,7 @@ export default function DecisionTree({
               <span className="w-2.5 h-2.5 rounded-full bg-blue-600 dark:bg-[#1cb0f6] inline-block"></span>
               {problem.RootQuestion || "Điều nào đang làm bạn khó xử nhất lúc này?"}
             </h3>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-[#8fa5b1] mb-5 font-medium">
+            <p className="text-sm sm:text-base text-slate-500 dark:text-[#8fa5b1] mb-5 font-medium">
               Chỉ cần chọn một điều quan trọng nhất trước. Sau khi giải quyết xong bạn luôn có thể xem tiếp.
             </p>
 
@@ -332,7 +332,7 @@ export default function DecisionTree({
               {formatSentenceCase(currentBranch.BranchTitle || currentBranch.OptionText)}
             </h2>
             {!focusMode && currentBranch.Intro && (
-              <p className="mt-2.5 text-xs sm:text-sm text-slate-600 dark:text-[#8fa5b1] leading-relaxed whitespace-pre-line border-l-4 border-indigo-500 pl-3.5 py-1 bg-slate-50 dark:bg-[#243640] rounded-r-xl font-medium">
+              <p className="mt-2.5 text-sm sm:text-base text-slate-700 dark:text-[#d1e1ea] leading-relaxed whitespace-pre-line border-l-4 border-indigo-500 pl-4 py-2 bg-slate-50 dark:bg-[#243640] rounded-r-xl font-medium">
                 {currentBranch.Intro}
               </p>
             )}
@@ -343,7 +343,7 @@ export default function DecisionTree({
               <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 dark:bg-indigo-400 inline-block"></span>
               {currentBranch.Question || "Điều gì làm bạn băn khoăn hoặc khó chịu nhất lúc này?"}
             </h3>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-[#8fa5b1] mb-5 font-medium">
+            <p className="text-sm sm:text-base text-slate-500 dark:text-[#8fa5b1] mb-5 font-medium">
               Chọn tình huống gần nhất với cảm xúc của bạn:
             </p>
 
@@ -449,7 +449,7 @@ export default function DecisionTree({
                     <span>{isCompanionSpeaking ? 'Đang đọc...' : 'Nghe lại'}</span>
                   </button>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-700 dark:text-[#d1e1ea] font-bold leading-relaxed mt-0.5">
+                <p className="text-sm sm:text-base text-slate-700 dark:text-[#d1e1ea] font-bold leading-relaxed mt-0.5">
                   “Bạn làm rất tốt! Giờ chỉ cần làm thử từng bước nhỏ dưới đây, không cần vội vã. Nút thắt đã bắt đầu được gỡ rồi đấy!”
                 </p>
               </div>
@@ -461,17 +461,17 @@ export default function DecisionTree({
 
             {/* Chi tiết các bước gỡ rối */}
             <div className="mt-5 pt-5 border-t-2 border-slate-100 dark:border-[#2b3c46]">
-              <div className="flex items-center gap-2 text-xs font-black text-slate-500 dark:text-[#8fa5b1] uppercase tracking-wider mb-3">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-slate-500 dark:text-[#8fa5b1] uppercase tracking-wider mb-3">
                 <Lightbulb className="w-4 h-4 text-amber-500" /> Các bước hành động cụ thể (Micro-actions):
               </div>
 
-              <div className="text-slate-700 dark:text-[#d1e1ea] text-sm sm:text-base leading-relaxed space-y-3 whitespace-pre-line bg-slate-50 dark:bg-[#243640] p-4 sm:p-6 rounded-2xl border-2 border-slate-200 dark:border-[#37464f] font-medium">
+              <div className="text-slate-800 dark:text-[#e6eef2] text-[15px] sm:text-[17px] leading-relaxed space-y-3 whitespace-pre-line bg-slate-50 dark:bg-[#243640] p-4 sm:p-6 rounded-2xl border-2 border-slate-200 dark:border-[#37464f] font-medium">
                 {currentSolution.Guide}
               </div>
 
               {/* Góc nháp nhỏ của riêng bạn (từ file HTML) */}
               <div className="mt-4 p-4 rounded-2xl bg-white dark:bg-[#1c2b33] border-2 border-dashed border-slate-300 dark:border-[#37464f] space-y-2">
-                <label htmlFor="scratchpad" className="block text-xs font-black text-slate-700 dark:text-[#e6eef2] uppercase tracking-wider">
+                <label htmlFor="scratchpad" className="block text-xs sm:text-sm font-black text-slate-700 dark:text-[#e6eef2] uppercase tracking-wider">
                   ✍️ Góc nháp của riêng bạn (không ai chấm điểm dòng này):
                 </label>
                 <textarea
@@ -480,7 +480,7 @@ export default function DecisionTree({
                   value={scratchpad}
                   onChange={(e) => setScratchpad(e.target.value)}
                   placeholder="Thử viết 1 câu trả lời nháp, 1 lời nhận xét cần sửa hoặc 1 ý nhỏ bạn vừa nghĩ ra..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#243640] border-2 border-slate-200 dark:border-[#37464f] focus:outline-hidden focus:border-blue-500 text-xs sm:text-sm text-slate-800 dark:text-[#e6eef2] font-medium transition-all"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#243640] border-2 border-slate-200 dark:border-[#37464f] focus:outline-hidden focus:border-blue-500 text-sm sm:text-base text-slate-800 dark:text-[#e6eef2] font-medium transition-all"
                 />
               </div>
             </div>
@@ -488,7 +488,7 @@ export default function DecisionTree({
             {/* Lưu ý an toàn & Đồng hành */}
             <div className="mt-5 p-4 rounded-2xl bg-blue-50 dark:bg-[#12384a] border-2 border-blue-200 dark:border-[#1c7aa6] flex items-start gap-3">
               <ShieldCheck className="w-5 h-5 text-blue-600 dark:text-[#1cb0f6] shrink-0 mt-0.5" />
-              <div className="text-xs sm:text-sm text-blue-900 dark:text-[#bae6fd] leading-relaxed font-medium">
+              <div className="text-sm sm:text-base text-blue-900 dark:text-[#bae6fd] leading-relaxed font-medium">
                 <strong>Nhắn nhủ từ thầy cô:</strong> Bạn không phải chịu đựng áp lực một mình. Nếu sau khi thử các bước trên mà vẫn thấy căng thẳng hoặc bối rối, hãy tìm đến thầy cô bộ môn, cán bộ tư vấn tâm lý học đường hoặc người thân để được hỗ trợ trực tiếp nhé.
               </div>
             </div>

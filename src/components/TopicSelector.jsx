@@ -229,12 +229,12 @@ export default function TopicSelector({
               </h1>
 
               <div className="rounded-2xl bg-slate-50 dark:bg-[#243640] border-2 border-slate-200/80 dark:border-[#37464f] p-4 sm:p-5">
-                <p className="text-xs sm:text-sm md:text-base font-bold text-slate-700 dark:text-[#d1e1ea] leading-relaxed italic">
+                <p className="text-sm sm:text-base md:text-lg font-bold text-slate-700 dark:text-[#d1e1ea] leading-relaxed italic">
                   “Bạn không cần phải giỏi ngay từ đầu. Bạn chỉ cần có một nơi giúp mình hiểu rõ hơn và tiến bộ từng ngày.”
                 </p>
               </div>
 
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-[#8fa5b1] leading-relaxed font-medium">
+              <p className="text-sm sm:text-base text-slate-600 dark:text-[#b2c4ce] leading-relaxed font-medium">
                 Mắc kẹt trước một bài tập khó hay lo lắng khi nhận lại bài kiểm tra là điều rất tự nhiên. Hãy chọn nút thắt bạn đang gặp, chúng mình sẽ cùng tháo gỡ từng chút một nhé.
               </p>
 
@@ -328,28 +328,28 @@ export default function TopicSelector({
           {/* 3 Cam kết */}
           <div className="mt-8 sm:mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 text-left max-w-4xl mx-auto pt-4 border-t-2 border-slate-200/70 dark:border-[#37464f] px-2">
             <div className="p-4 rounded-2xl bg-white dark:bg-[#1c2b33] border-2 border-slate-200 dark:border-[#37464f] shadow-[0_3px_0_#e2e8f0] dark:shadow-none">
-              <div className="flex items-center gap-2 text-blue-600 dark:text-[#1cb0f6] font-black text-sm mb-1">
+              <div className="flex items-center gap-2 text-blue-600 dark:text-[#1cb0f6] font-black text-sm sm:text-base mb-1">
                 <CheckCircle2 className="w-4 h-4" /> Tình huống thực tế
               </div>
-              <p className="text-xs text-slate-500 dark:text-[#8fa5b1] font-medium leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-[#b2c4ce] font-medium leading-relaxed">
                 Được tổng hợp từ các bài tập, kỳ thi và tâm lý thực tế của học sinh.
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-white dark:bg-[#1c2b33] border-2 border-slate-200 dark:border-[#37464f] shadow-[0_3px_0_#e2e8f0] dark:shadow-none">
-              <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black text-sm mb-1">
+              <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black text-sm sm:text-base mb-1">
                 <CheckCircle2 className="w-4 h-4" /> Cây quyết định thông minh
               </div>
-              <p className="text-xs text-slate-500 dark:text-[#8fa5b1] font-medium leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-[#b2c4ce] font-medium leading-relaxed">
                 Phân nhánh từng bước giúp bạn hiểu rõ vấn đề và có giải pháp vi mô ngay.
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-white dark:bg-[#1c2b33] border-2 border-slate-200 dark:border-[#37464f] shadow-[0_3px_0_#e2e8f0] dark:shadow-none">
-              <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-black text-sm mb-1">
+              <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-black text-sm sm:text-base mb-1">
                 <ShieldCheck className="w-4 h-4" /> Riêng tư & Hoàn toàn 0đ
               </div>
-              <p className="text-xs text-slate-500 dark:text-[#8fa5b1] font-medium leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-[#b2c4ce] font-medium leading-relaxed">
                 Không cần tạo tài khoản hay đăng nhập, giao diện thân thiện, âm thanh thư giãn.
               </p>
             </div>
@@ -486,7 +486,7 @@ export default function TopicSelector({
 
                       {/* Chi tiết mô tả xổ xuống */}
                       {isExpanded && (
-                        <div className="mt-2.5 p-3.5 sm:p-4 rounded-2xl bg-blue-50/70 dark:bg-[#12384a]/60 border-2 border-blue-200 dark:border-[#1c7aa6]/50 text-slate-700 dark:text-[#d1e1ea] text-xs sm:text-sm leading-relaxed whitespace-pre-line animate-in fade-in duration-200 font-medium">
+                        <div className="mt-2.5 p-3.5 sm:p-4 rounded-2xl bg-blue-50/70 dark:bg-[#12384a]/60 border-2 border-blue-200 dark:border-[#1c7aa6]/50 text-slate-700 dark:text-[#d1e1ea] text-sm sm:text-base leading-relaxed whitespace-pre-line animate-in fade-in duration-200 font-medium">
                           {prob.Intro || "Hướng dẫn phân nhánh giúp bạn giải quyết từng bước cụ thể."}
                         </div>
                       )}
