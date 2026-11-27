@@ -67,6 +67,10 @@ const PROBLEM_ICONS = {
   '1.23': { icon: HelpCircle, color: 'text-indigo-600 bg-indigo-100 border-indigo-300 shadow-[0_3px_0_#a5b4fc]', tag: 'Chưa theo kịp bài' },
   '1.24': { icon: ShieldCheck, color: 'text-amber-600 bg-amber-100 border-amber-300 shadow-[0_3px_0_#fcd34d]', tag: 'Áp lực gia đình' },
   '1.25': { icon: HeartPulse, color: 'text-teal-600 bg-teal-100 border-teal-300 shadow-[0_3px_0_#5eead4]', tag: 'Giấc ngủ & sinh hoạt' },
+  '1.26': { icon: Frown, color: 'text-purple-600 bg-purple-100 border-purple-300 shadow-[0_3px_0_#d8b4fe]', tag: 'Giảm hào hứng học' },
+  '1.27': { icon: Compass, color: 'text-pink-600 bg-pink-100 border-pink-300 shadow-[0_3px_0_#f9a8d4]', tag: 'Hồi hộp thuyết trình' },
+  '1.28': { icon: ShieldCheck, color: 'text-emerald-600 bg-emerald-100 border-emerald-300 shadow-[0_3px_0_#86efac]', tag: 'Học phí & Tự học' },
+  '1.29': { icon: RefreshCw, color: 'text-orange-600 bg-orange-100 border-orange-300 shadow-[0_3px_0_#fdba74]', tag: 'Nản lòng khi thử lại' },
 };
 
 const ITEMS_PER_PAGE = 6;
@@ -141,7 +145,7 @@ export default function TopicSelector({
         category = 'submission';
       } else if (['1.10', '1.11', '1.12', '1.13', '1.14', '1.15', '1.21'].includes(code)) {
         category = 'exam';
-      } else if (['1.16', '1.17', '1.19', '1.20', '1.22', '1.24', '1.25'].includes(code)) {
+      } else if (['1.16', '1.17', '1.19', '1.20', '1.22', '1.24', '1.25', '1.26', '1.27', '1.28', '1.29'].includes(code)) {
         category = 'mindset';
       }
 
