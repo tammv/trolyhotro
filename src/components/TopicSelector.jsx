@@ -83,6 +83,7 @@ const PROBLEM_ICONS = {
   '1.37': { icon: Layers, color: 'text-teal-600 bg-teal-100 border-teal-300 shadow-[0_3px_0_#5eead4]', tag: 'Học bù theo kịp bài' },
   '1.38': { icon: CalendarRange, color: 'text-indigo-600 bg-indigo-100 border-indigo-300 shadow-[0_3px_0_#a5b4fc]', tag: 'Cân bằng học trường & thêm' },
   '1.39': { icon: Puzzle, color: 'text-blue-600 bg-blue-100 border-blue-300 shadow-[0_3px_0_#93c5fd]', tag: 'Vận dụng vào bài mới' },
+  '1.40': { icon: Clock, color: 'text-orange-600 bg-orange-100 border-orange-300 shadow-[0_3px_0_#fdba74]', tag: 'Bài nhóm sát hạn nộp' },
 };
 
 const ITEMS_PER_PAGE = 6;
@@ -153,7 +154,7 @@ export default function TopicSelector({
       let category = 'other';
       if (['1.1', '1.2', '1.5', '1.6', '1.7', '1.8', '1.23', '1.37', '1.39'].includes(code)) {
         category = 'homework';
-      } else if (['1.3', '1.4', '1.9', '1.18'].includes(code)) {
+      } else if (['1.3', '1.4', '1.9', '1.18', '1.40'].includes(code)) {
         category = 'submission';
       } else if (['1.10', '1.11', '1.12', '1.13', '1.14', '1.15', '1.21', '1.32', '1.34'].includes(code)) {
         category = 'exam';
