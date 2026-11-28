@@ -79,6 +79,8 @@ const PROBLEM_ICONS = {
   '1.33': { icon: Heart, color: 'text-rose-600 bg-rose-100 border-rose-300 shadow-[0_3px_0_#fda4af]', tag: 'Áp lực so sánh điểm' },
   '1.34': { icon: CheckCircle2, color: 'text-sky-600 bg-sky-100 border-sky-300 shadow-[0_3px_0_#7dd3fc]', tag: 'Chưa yên tâm trước thi' },
   '1.35': { icon: ShieldCheck, color: 'text-violet-600 bg-violet-100 border-violet-300 shadow-[0_3px_0_#c4b5fd]', tag: 'Mất tự tin & Ngại nói' },
+  '1.36': { icon: BrainCircuit, color: 'text-amber-600 bg-amber-100 border-amber-300 shadow-[0_3px_0_#fcd34d]', tag: 'Nỗ lực ảo khi tự học' },
+  '1.37': { icon: Layers, color: 'text-teal-600 bg-teal-100 border-teal-300 shadow-[0_3px_0_#5eead4]', tag: 'Học bù theo kịp bài' },
 };
 
 const ITEMS_PER_PAGE = 6;
@@ -147,13 +149,13 @@ export default function TopicSelector({
       };
 
       let category = 'other';
-      if (['1.1', '1.2', '1.5', '1.6', '1.7', '1.8', '1.23'].includes(code)) {
+      if (['1.1', '1.2', '1.5', '1.6', '1.7', '1.8', '1.23', '1.37'].includes(code)) {
         category = 'homework';
       } else if (['1.3', '1.4', '1.9', '1.18'].includes(code)) {
         category = 'submission';
       } else if (['1.10', '1.11', '1.12', '1.13', '1.14', '1.15', '1.21', '1.32', '1.34'].includes(code)) {
         category = 'exam';
-      } else if (['1.16', '1.17', '1.19', '1.20', '1.22', '1.24', '1.25', '1.26', '1.27', '1.28', '1.29', '1.30', '1.31', '1.33', '1.35'].includes(code)) {
+      } else if (['1.16', '1.17', '1.19', '1.20', '1.22', '1.24', '1.25', '1.26', '1.27', '1.28', '1.29', '1.30', '1.31', '1.33', '1.35', '1.36'].includes(code)) {
         category = 'mindset';
       }
 

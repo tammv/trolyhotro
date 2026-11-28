@@ -80,6 +80,8 @@ export const SCENARIO_SYNONYMS = {
   '1.33': 'so sanh diem so voi ban so ba me that vong gia dinh ap luc con nha nguoi ta diem thap bi trach',
   '1.34': 'on roi van chua yen tam lo quen bai khi thi dong vo khong nho cau hoi khac mau tu kiem tra truoc thi',
   '1.35': 'diem kiem tra thap mat tu tin ngai phat bieu so noi sai bi ban treu choc im lang trong gio hoc',
+  '1.36': 'no luc ao hoc lau khong nho gap vo quen luon doc thay quen lam lai khong duoc hay xao nhang mat tap trung',
+  '1.37': 'hoc bu nghi hoc mat bai theo kip bai moi muon vo ban chep bai bu bi hong kien thuc buoi truoc',
 };
 
 /**
