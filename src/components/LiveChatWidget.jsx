@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircle, X, ExternalLink, ShieldCheck, PhoneCall, Send, ArrowLeft } from 'lucide-react';
+import { MessageCircle, X, ExternalLink, ShieldCheck, PhoneCall, Send, ArrowLeft, Maximize2, Minimize2 } from 'lucide-react';
 import { CHAT_CONFIG, getAnonymousStudentId } from '../lib/chatConfig';
 import { soundFx } from '../lib/sound';
 import StudyZenMascot from './StudyZenMascot';
@@ -7,6 +7,7 @@ import StudyZenMascot from './StudyZenMascot';
 export default function LiveChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeMode, setActiveMode] = useState('menu'); // 'menu' | 'crisp'
+  const [isExpanded, setIsExpanded] = useState(false);
   const anonId = getAnonymousStudentId();
   const isCrispConfigured = Boolean(CHAT_CONFIG.crispWebsiteId && CHAT_CONFIG.crispWebsiteId.trim() !== '');
 
@@ -23,18 +24,22 @@ export default function LiveChatWidget() {
     soundFx.playBack();
     setIsOpen(false);
     setActiveMode('menu');
+    setIsExpanded(false);
   };
+
+  const containerSizeClass =
+    activeMode === 'crisp'
+      ? isExpanded
+        ? 'w-[calc(100vw-1.5rem)] sm:w-[640px] md:w-[740px] h-[80vh] max-h-[800px] min-h-[520px]'
+        : 'w-[calc(100vw-1.5rem)] sm:w-[460px] md:w-[500px] h-[72vh] max-h-[680px] min-h-[500px]'
+      : 'w-[calc(100vw-2rem)] sm:w-[380px]';
 
   return (
     <div className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end">
       
       {/* Cửa sổ Chat 3D StudyZen */}
       {isOpen && (
-        <div className={`mb-3 bg-white dark:bg-[#1c2b33] rounded-3xl border-2 border-blue-200 dark:border-[#37464f] shadow-[0_12px_35px_rgba(37,99,235,0.28)] overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200 flex flex-col ${
-          activeMode === 'crisp' 
-            ? 'w-[calc(100vw-2rem)] sm:w-[390px] h-[480px] sm:h-[540px]' 
-            : 'w-[310px] sm:w-[340px]'
-        }`}>
+        <div className={`mb-3 bg-white dark:bg-[#1c2b33] rounded-3xl border-2 border-blue-200 dark:border-[#37464f] shadow-[0_12px_35px_rgba(37,99,235,0.28)] overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200 flex flex-col transition-all ${containerSizeClass}`}>
           
           {/* Header khung chat */}
           <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-3.5 sm:p-4 text-white flex items-center justify-between shrink-0">
@@ -44,6 +49,7 @@ export default function LiveChatWidget() {
                   onClick={() => {
                     soundFx.playBack();
                     setActiveMode('menu');
+                    setIsExpanded(false);
                   }}
                   className="p-1.5 rounded-xl bg-white/15 hover:bg-white/25 transition-colors cursor-pointer"
                   title="Quay lại chọn kênh"
@@ -56,42 +62,57 @@ export default function LiveChatWidget() {
                 </div>
               )}
               <div>
-                <h4 className="font-black text-sm leading-tight">
+                <h4 className="font-black text-sm sm:text-base leading-tight">
                   {activeMode === 'crisp' ? `Chat với ${CHAT_CONFIG.teacherName}` : 'Nhắn trực tiếp với thầy cô'}
                 </h4>
-                <div className="flex items-center gap-1.5 text-[11px] text-blue-100 font-semibold mt-0.5">
+                <div className="flex items-center gap-1.5 text-xs text-blue-100 font-semibold mt-0.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                   <span>Ẩn danh hoàn toàn · Mã: {anonId}</span>
                 </div>
               </div>
             </div>
-            <button
-              onClick={handleClose}
-              className="p-1.5 rounded-xl hover:bg-white/15 transition-colors cursor-pointer"
-              aria-label="Đóng khung chat"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1">
+              {activeMode === 'crisp' && (
+                <button
+                  onClick={() => {
+                    soundFx.playPop();
+                    setIsExpanded(prev => !prev);
+                  }}
+                  className="hidden sm:inline-flex p-1.5 rounded-xl hover:bg-white/15 transition-colors cursor-pointer"
+                  title={isExpanded ? 'Thu nhỏ khung chat' : 'Phóng to khung chat'}
+                  aria-label={isExpanded ? 'Thu nhỏ khung chat' : 'Phóng to khung chat'}
+                >
+                  {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                </button>
+              )}
+              <button
+                onClick={handleClose}
+                className="p-1.5 rounded-xl hover:bg-white/15 transition-colors cursor-pointer"
+                aria-label="Đóng khung chat"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Chế độ Menu chọn kênh */}
           {activeMode === 'menu' && (
-            <div className="p-4 space-y-3">
-              <p className="text-xs text-slate-600 dark:text-[#d1e1ea] font-medium leading-relaxed">
+            <div className="p-4 sm:p-5 space-y-3.5">
+              <p className="text-sm text-slate-600 dark:text-[#d1e1ea] font-medium leading-relaxed">
                 Nếu bạn chưa biết gọi tên khó khăn của mình hoặc cần người lắng nghe trực tiếp, cứ nhắn cho cô nhé!
               </p>
 
               {/* Nút 1: Chat trực tiếp trên web (Crisp Embed) */}
               <button
                 onClick={handleOpenWebChat}
-                className="w-full p-3.5 rounded-2xl bg-blue-600 hover:brightness-105 active:translate-y-0.5 text-white shadow-[0_4px_0_#1d4ed8] transition-all flex items-center justify-between gap-2 cursor-pointer text-left btn-3d"
+                className="w-full p-3.5 sm:p-4 rounded-2xl bg-blue-600 hover:brightness-105 active:translate-y-0.5 text-white shadow-[0_4px_0_#1d4ed8] transition-all flex items-center justify-between gap-2 cursor-pointer text-left btn-3d"
               >
                 <div className="flex items-center gap-2.5">
                   <div className="p-2 rounded-xl bg-white/15">
                     <MessageCircle className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs sm:text-sm font-black">Chat trực tiếp trên web</div>
+                    <div className="text-sm sm:text-base font-black">Chat trực tiếp trên web</div>
                   </div>
                 </div>
                 <Send className="w-4 h-4 shrink-0" />
@@ -103,17 +124,17 @@ export default function LiveChatWidget() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => soundFx.playChime()}
-                className="w-full p-3.5 rounded-2xl bg-slate-50 hover:bg-blue-50 dark:bg-[#243640] dark:hover:bg-[#2c404c] border-2 border-slate-200 dark:border-[#37464f] shadow-[0_3px_0_#e2e8f0] dark:shadow-none transition-all flex items-center justify-between gap-2 text-left btn-3d"
+                className="w-full p-3.5 sm:p-4 rounded-2xl bg-slate-50 hover:bg-blue-50 dark:bg-[#243640] dark:hover:bg-[#2c404c] border-2 border-slate-200 dark:border-[#37464f] shadow-[0_3px_0_#e2e8f0] dark:shadow-none transition-all flex items-center justify-between gap-2 text-left btn-3d"
               >
                 <div className="flex items-center gap-2.5">
                   <div className="p-2 rounded-xl bg-blue-100 dark:bg-[#12384a] text-blue-600 dark:text-[#1cb0f6]">
                     <PhoneCall className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs sm:text-sm font-black text-slate-800 dark:text-[#e6eef2]">
+                    <div className="text-sm sm:text-base font-black text-slate-800 dark:text-[#e6eef2]">
                       Nhắn qua Zalo {CHAT_CONFIG.teacherName}
                     </div>
-                    <div className="text-[11px] text-slate-500 dark:text-[#8fa5b1] font-semibold">
+                    <div className="text-xs text-slate-500 dark:text-[#8fa5b1] font-semibold">
                       SĐT: {CHAT_CONFIG.teacherZaloPhone}
                     </div>
                   </div>
@@ -121,8 +142,8 @@ export default function LiveChatWidget() {
                 <ExternalLink className="w-4 h-4 text-slate-400 shrink-0" />
               </a>
 
-              <div className="pt-1 flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-[#58cc02] font-bold justify-center">
-                <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+              <div className="pt-1 flex items-center gap-1.5 text-xs text-emerald-700 dark:text-[#58cc02] font-bold justify-center">
+                <ShieldCheck className="w-4 h-4 shrink-0" />
                 <span>Bảo mật danh tính · Tin nhắn được giữ kín</span>
               </div>
             </div>
