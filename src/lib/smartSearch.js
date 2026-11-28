@@ -82,6 +82,8 @@ export const SCENARIO_SYNONYMS = {
   '1.35': 'diem kiem tra thap mat tu tin ngai phat bieu so noi sai bi ban treu choc im lang trong gio hoc',
   '1.36': 'no luc ao hoc lau khong nho gap vo quen luon doc thay quen lam lai khong duoc hay xao nhang mat tap trung',
   '1.37': 'hoc bu nghi hoc mat bai theo kip bai moi muon vo ban chep bai bu bi hong kien thuc buoi truoc',
+  '1.38': 'hoc them lich hoc day dac sap xep thoi gian giua hoc o truong va hoc them ve muon thieu gio ngu bai don',
+  '1.39': 'van dung kien thuc da hoc vao bai tap moi hieu de nho cach cu nhung khong biet dung o buoc nao',
 };
 
 /**
