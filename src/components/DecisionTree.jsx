@@ -275,18 +275,35 @@ export default function DecisionTree({
         <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-200">
           
           <div className="bg-white dark:bg-[#1c2b33] rounded-3xl p-5 sm:p-7 border-2 border-slate-200 dark:border-[#37464f] shadow-[0_4px_0_#e2e8f0] dark:shadow-none">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 dark:bg-[#12384a] text-blue-700 dark:text-[#1cb0f6] text-xs font-black border border-blue-200 dark:border-[#1c7aa6] mb-2.5">
-              <Sparkles className="w-3.5 h-3.5 text-blue-500 dark:text-[#1cb0f6]" />
-              <span>Tình huống bạn chọn</span>
+            <div className="flex flex-col md:flex-row md:items-center gap-5">
+              <div className="flex-1 min-w-0">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 dark:bg-[#12384a] text-blue-700 dark:text-[#1cb0f6] text-xs font-black border border-blue-200 dark:border-[#1c7aa6] mb-2.5">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-500 dark:text-[#1cb0f6]" />
+                  <span>Tình huống bạn chọn</span>
+                </div>
+                <h2 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-[#e6eef2] tracking-tight leading-snug">
+                  {formatSentenceCase(problem.Title)}
+                </h2>
+                {!focusMode && problem.Intro && (
+                  <p className="mt-3 text-sm sm:text-base text-slate-700 dark:text-[#d1e1ea] leading-relaxed whitespace-pre-line border-l-4 border-blue-500 pl-4 py-2 bg-slate-50 dark:bg-[#243640] rounded-r-xl font-medium">
+                    {problem.Intro}
+                  </p>
+                )}
+              </div>
+
+              {!focusMode && problem.Code && (
+                <div className="shrink-0 mx-auto md:mx-0">
+                  <img
+                    src={`/scenarios/${problem.Code}_before.jpg`}
+                    alt={`Minh họa tình huống ${formatSentenceCase(problem.Title)}`}
+                    onError={(e) => {
+                      e.currentTarget.parentElement.style.display = 'none';
+                    }}
+                    className="w-48 sm:w-52 md:w-56 aspect-square object-cover rounded-2xl border-2 border-blue-100 dark:border-[#37464f] shadow-md bg-slate-100 dark:bg-[#243640]"
+                  />
+                </div>
+              )}
             </div>
-            <h2 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-[#e6eef2] tracking-tight leading-snug">
-              {formatSentenceCase(problem.Title)}
-            </h2>
-            {!focusMode && problem.Intro && (
-              <p className="mt-3 text-sm sm:text-base text-slate-700 dark:text-[#d1e1ea] leading-relaxed whitespace-pre-line border-l-4 border-blue-500 pl-4 py-2 bg-slate-50 dark:bg-[#243640] rounded-r-xl font-medium">
-                {problem.Intro}
-              </p>
-            )}
           </div>
 
           <div className="bg-white dark:bg-[#1c2b33] rounded-3xl p-5 sm:p-7 border-2 border-slate-200 dark:border-[#37464f] shadow-[0_4px_0_#e2e8f0] dark:shadow-none">
@@ -465,8 +482,26 @@ export default function DecisionTree({
                 <Lightbulb className="w-4 h-4 text-amber-500" /> Các bước hành động cụ thể (Micro-actions):
               </div>
 
-              <div className="text-slate-800 dark:text-[#e6eef2] text-[15px] sm:text-[17px] leading-relaxed space-y-3 whitespace-pre-line bg-slate-50 dark:bg-[#243640] p-4 sm:p-6 rounded-2xl border-2 border-slate-200 dark:border-[#37464f] font-medium">
-                {currentSolution.Guide}
+              <div className="flex flex-col md:flex-row md:items-start gap-5">
+                <div className="flex-1 text-slate-800 dark:text-[#e6eef2] text-[15px] sm:text-[17px] leading-relaxed space-y-3 whitespace-pre-line bg-slate-50 dark:bg-[#243640] p-4 sm:p-6 rounded-2xl border-2 border-slate-200 dark:border-[#37464f] font-medium">
+                  {currentSolution.Guide}
+                </div>
+
+                {!focusMode && problem.Code && (
+                  <div className="shrink-0 mx-auto md:mx-0 flex flex-col items-center gap-1.5">
+                    <img
+                      src={`/scenarios/${problem.Code}_after.jpg`}
+                      alt={`Hình dung sau khi tháo gỡ ${formatSentenceCase(problem.Title)}`}
+                      onError={(e) => {
+                        e.currentTarget.parentElement.style.display = 'none';
+                      }}
+                      className="w-48 sm:w-52 md:w-56 aspect-square object-cover rounded-2xl border-2 border-emerald-200 dark:border-[#226744] shadow-md bg-slate-100 dark:bg-[#243640]"
+                    />
+                    <span className="text-[11px] font-bold text-emerald-700 dark:text-[#58cc02]">
+                      Khi nút thắt được tháo gỡ ✨
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Góc nháp nhỏ của riêng bạn (từ file HTML) */}
